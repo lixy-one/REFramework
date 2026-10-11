@@ -19,6 +19,7 @@
 #include "mods/VR.hpp"
 #include "mods/LooseFileLoader.hpp"
 #include "mods/FaultyFileDetector.hpp"
+#include "mods/MCP.hpp"
 #include "mods/vr/games/RE8VR.hpp"
 
 #include "Mods.hpp"
@@ -36,6 +37,7 @@ Mods::Mods() {
     m_mods.emplace_back(MethodDatabase::get());
     m_mods.emplace_back(Hooks::get());
     m_mods.emplace_back(LooseFileLoader::get());
+    m_mods.emplace_back(MCP::get());   // [CN patch] 内置 HTTP/MCP 服务
 
     if (sdk::GameIdentity::get().tdb_ver() >= 81) {
         m_mods.emplace_back(FaultyFileDetector::get());

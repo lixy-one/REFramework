@@ -625,6 +625,20 @@ namespace l10n {
             { "%s not loaded: Unknown error", "%s 未加载：未知错误" },
             // ---- 第六批：跨行拼接字符串 ----
             { "On a 16:10 display, keeps the game at 16:9 with black bars instead of\nstretching to fill the screen. Prevents UI element misalignment.", "在 16:10 显示器上，以黑边保持 16:9（而不是拉伸铺满），避免界面元素错位。" },
+            // ---- 第七批：MCP 模块 ----
+            { "MCP (HTTP API)", "MCP（HTTP 接口）" },
+            { "Enable MCP server", "启用 MCP 服务" },
+            { "Port", "端口" },
+            { "Allow write / invoke (use with care)", "允许写操作 / 调用方法（谨慎使用）" },
+            { "Running:", "运行中：" },
+            { "Requests:", "请求数：" },
+            { "Errors:", "错误数：" },
+            { "Error:", "错误：" },
+            { "Endpoints: /api/ping /stats /search /type /singleton /mem /fields /field /write /alloc", "接口：/api/ping（存活）/api/stats（统计）/api/search（搜索类型）/api/type（类型详情）/api/singleton（单例）/api/mem（读内存）/api/fields（读对象字段）/api/field（读字段）/api/write（写内存）/api/alloc（分配内存）" },
+            { "Stopped", "已停止" },
+            // ---- 第八批：MCP 补充 ----
+            { "(stop the server first to change the port)", "（停止服务后才能修改端口）" },
+            { "Allow write / invoke (use with care)", "允许写操作 / 调用方法（谨慎使用）" },
         };
     } // namespace
 

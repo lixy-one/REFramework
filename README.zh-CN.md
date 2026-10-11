@@ -74,6 +74,37 @@ compile-options = ["/GS-", "/bigobj", "/EHa", "/utf-8"]
 
 ---
 
+### 5. 内置 MCP（HTTP API）
+
+`MCP.{hpp,cpp}` 集成了一台内置 HTTP 服务，让外部程序（AI 助手 / 调试脚本）直接读取游戏运行时数据，**不再需要额外的插件 DLL**。
+
+| 接口 | 说明 |
+|---|---|
+| `GET /api/ping` | 存活检查 |
+| `GET /api/stats` | 类型数量等统计 |
+| `GET /api/search?q=<关键字>&limit=N` | 搜索类型 |
+| `GET /api/type?name=<全名>&fields=1&methods=1` | 类型详情 |
+| `GET /api/singleton?name=<类型名>` | 取单例地址 |
+| `GET /api/mem?addr=<hex>&size=N` | 读内存 |
+| `GET /api/fields?addr=<hex>&type=<全名>&max=N` | 读对象全部字段值 |
+| `GET /api/field?addr=<hex>&type=<全名>&name=<字段>` | 读单个字段 |
+| `GET /api/write?addr=<hex>&hex=...` | 写内存（需开启写开关） |
+| `GET /api/alloc?size=N` | 分配内存（需开启写开关） |
+
+**配置**（「配置 → MCP」）：
+
+| 项 | 默认 | 说明 |
+|---|---|---|
+| 启用 MCP 服务 | 关 | 打开即启动监听 |
+| 端口 | 17890 | **运行中不可修改**（需先停服务） |
+| 允许写操作 / 调用方法 | 关 | 写接口的安全开关，默认拒绝 |
+
+**设计要点**：
+
+- 只监听 `127.0.0.1`，不对外暴露
+- HTTP 线程只负责收发；**所有游戏数据访问都在游戏线程完成**（请求入队 → 主循环取出 → 写回结果），避免跨线程访问 SDK 导致崩溃
+- 端口用普通 `int` + `InputInt` —— **不能**用 `ModInt32`，它的 `draw()` 是 `SliderInt(..., 5, 40)`，会把 17890 夹成 40
+- 停止服务时通过**关闭监听 socket** 中断阻塞中的 `accept()`（只设标志位不够）
 ## 使用
 
 ### 方式一：直接用编译好的 DLL
