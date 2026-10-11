@@ -1,49 +1,80 @@
 #include <utility/Module.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <utility/Scan.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/SceneManager.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/MurmurHash.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/Renderer.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/resources/ShaderResource.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/REGameObject.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "VR.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "Graphics.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #ifdef REFRAMEWORK_UNIVERSAL
 #include "sdk/regenny/re9/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re9/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/ViaDispatch.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #else
 #if TDB_VER >= 83
 #include "sdk/regenny/re9/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re9/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER <= 49
 #include "sdk/regenny/re7/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re7/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER < 69
 #include "sdk/regenny/re3/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re3/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER == 69
 #include "sdk/regenny/re8/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re8/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER == 70
 #include "sdk/regenny/re2_tdb70/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re2_tdb70/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER >= 71
 #ifdef SF6
 #include "sdk/regenny/sf6/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/sf6/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif defined(RE4)
 #include "sdk/regenny/re4/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re4/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif defined(DD2) || TDB_VER >= 74 // TODO: Actually make headers for TDB74
 #include "sdk/regenny/dd2/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/dd2/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #else
 #include "sdk/regenny/mhrise_tdb71/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/mhrise_tdb71/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #endif
 #endif
 #endif
@@ -253,18 +284,18 @@ void Graphics::on_frame() {
 
 void Graphics::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_FirstUseEver);
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
     if (sdk::GameIdentity::get().is_re4()) {
     ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Once);
-    if (ImGui::TreeNode("RE4 Scope Tweaks")) {
-        m_scope_tweaks->draw("Enable Scope Tweaks");
+    if (ImGui::TreeNode(l10n::tr("RE4 Scope Tweaks"))) {
+        m_scope_tweaks->draw(l10n::tr("Enable Scope Tweaks"));
 
         if (m_scope_tweaks->value()) {
-            m_scope_interlaced_rendering->draw("Enable Interlaced Rendering");
-            m_scope_image_quality->draw("Scope Image Quality");
+            m_scope_interlaced_rendering->draw(l10n::tr("Enable Interlaced Rendering"));
+            m_scope_image_quality->draw(l10n::tr("Scope Image Quality"));
         }
 
         ImGui::TreePop();
@@ -272,73 +303,73 @@ void Graphics::on_draw_ui() {
     }
 
     ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Once);
-    if (ImGui::TreeNode("Ultrawide/FOV Options")) {
-        if (m_ultrawide_fix->draw("Ultrawide/FOV/Aspect Ratio Fix") && m_ultrawide_fix->value() == false) {
+    if (ImGui::TreeNode(l10n::tr("Ultrawide/FOV Options"))) {
+        if (m_ultrawide_fix->draw(l10n::tr("Ultrawide/FOV/Aspect Ratio Fix")) && m_ultrawide_fix->value() == false) {
             do_ultrawide_fov_restore(true);
         }
 
         if (m_ultrawide_fix->value()) {
-            m_ultrawide_16_10_mode->draw("16:10 Mode: Use Black Bars (maintain 16:9)");
+            m_ultrawide_16_10_mode->draw(l10n::tr("16:10 Mode: Use Black Bars (maintain 16:9)"));
             if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip("On a 16:10 display, keeps the game at 16:9 with black bars instead of\n"
-                                  "stretching to fill the screen. Prevents UI element misalignment.");
+                ImGui::SetTooltip(l10n::tr("On a 16:10 display, keeps the game at 16:9 with black bars instead of\n"
+                                  "stretching to fill the screen. Prevents UI element misalignment."));
             }
 
             if (!sdk::GameIdentity::get().is_mhwilds()) {
-                m_ultrawide_constrain_ui->draw("Ultrawide: Constrain UI to 16:9");
+                m_ultrawide_constrain_ui->draw(l10n::tr("Ultrawide: Constrain UI to 16:9"));
                 if (m_ultrawide_constrain_ui->value()) {
-                    m_ultrawide_constrain_child_ui->draw("Ultrawide: Constrain Child UI to 16:9");
+                    m_ultrawide_constrain_child_ui->draw(l10n::tr("Ultrawide: Constrain Child UI to 16:9"));
                 }
             } else {
-                m_ultrawide_ui_correction->draw("Ultrawide: UI Correction");
+                m_ultrawide_ui_correction->draw(l10n::tr("Ultrawide: UI Correction"));
             }
-            m_ultrawide_vertical_fov->draw("Ultrawide: Enable Vertical FOV");
-            m_ultrawide_custom_fov->draw("Ultrawide: Override FOV");
-            m_ultrawide_fov_multiplier->draw("Ultrawide: FOV Multiplier");
+            m_ultrawide_vertical_fov->draw(l10n::tr("Ultrawide: Enable Vertical FOV"));
+            m_ultrawide_custom_fov->draw(l10n::tr("Ultrawide: Override FOV"));
+            m_ultrawide_fov_multiplier->draw(l10n::tr("Ultrawide: FOV Multiplier"));
         }
 
-        m_force_render_res_to_window->draw("Force Render Resolution to Window Size");
+        m_force_render_res_to_window->draw(l10n::tr("Force Render Resolution to Window Size"));
 
         ImGui::TreePop();
     }
 
     ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Once);
-    if (ImGui::TreeNode("GUI Options")) {
-        m_disable_gui->draw("Hide GUI");
-        m_disable_gui_key->draw("Hide GUI key");
+    if (ImGui::TreeNode(l10n::tr("GUI Options"))) {
+        m_disable_gui->draw(l10n::tr("Hide GUI"));
+        m_disable_gui_key->draw(l10n::tr("Hide GUI key"));
         ImGui::TreePop();
     }
 
     if (sdk::GameIdentity::get().tdb_ver() >= 69) {
         ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Once);
-        if (ImGui::TreeNode("Ray Tracing Tweaks")) {
-            m_ray_tracing_tweaks->draw("Enable Ray Tracing Tweaks");
+        if (ImGui::TreeNode(l10n::tr("Ray Tracing Tweaks"))) {
+            m_ray_tracing_tweaks->draw(l10n::tr("Enable Ray Tracing Tweaks"));
 
             if (m_ray_tracing_tweaks->value()) {
-                m_ray_trace_disable_raster_shadows->draw("Disable Raster Shadows (with PT)");
-                m_ray_trace_always_recreate_rt_component->draw("Always Recreate RT Component");
+                m_ray_trace_disable_raster_shadows->draw(l10n::tr("Disable Raster Shadows (with PT)"));
+                m_ray_trace_always_recreate_rt_component->draw(l10n::tr("Always Recreate RT Component"));
                 // Description of the above option
                 if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Recreates the RT component. Useful if Ray Tracing Tweaks is not working.");
+                    ImGui::SetTooltip(l10n::tr("Recreates the RT component. Useful if Ray Tracing Tweaks is not working."));
                 }
-                m_ray_trace_type->draw("Ray Trace Type");
+                m_ray_trace_type->draw(l10n::tr("Ray Trace Type"));
 
                 const auto clone_tooltip = 
                         "Can draw another RT pass over the main RT pass. Useful for hybrid rendering.\n"
                         "Example: Set Ray Trace Type to Pure and Ray Trace Clone Type to ASVGF. This adds RTGI to the path traced image.\n"
                         "Path Space Filter is also another good alternative for RTGI but it costs more performance.\n";
 
-                m_ray_trace_clone_type_pre->draw("Ray Trace Clone Type Pre");
+                m_ray_trace_clone_type_pre->draw(l10n::tr("Ray Trace Clone Type Pre"));
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip(clone_tooltip);
                 }
 
-                m_ray_trace_clone_type_post->draw("Ray Trace Clone Type Post");
+                m_ray_trace_clone_type_post->draw(l10n::tr("Ray Trace Clone Type Post"));
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip(clone_tooltip);
                 }
                 
-                m_ray_trace_clone_type_true->draw("Ray Trace Clone Type True");
+                m_ray_trace_clone_type_true->draw(l10n::tr("Ray Trace Clone Type True"));
                 if (ImGui::IsItemHovered()) {
                     const auto true_tooltip =
                         "Uses a completely separate RT component instead of re-using the main RT component.\n"
@@ -348,8 +379,8 @@ void Graphics::on_draw_ui() {
 
                 // Hybrid/pure
                 if (is_pt_type(m_ray_trace_type->value()) || is_pt_type(m_ray_trace_clone_type_true->value())) {
-                    m_bounce_count->draw("Bounce Count");
-                    m_samples_per_pixel->draw("Samples Per Pixel");
+                    m_bounce_count->draw(l10n::tr("Bounce Count"));
+                    m_samples_per_pixel->draw(l10n::tr("Samples Per Pixel"));
                 }
             }
 
@@ -357,8 +388,8 @@ void Graphics::on_draw_ui() {
         }
 
         ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Once);
-        if (ImGui::TreeNode("Shader Playground")) {
-            m_shader_playground->draw("Enable Shader Playground");
+        if (ImGui::TreeNode(l10n::tr("Shader Playground"))) {
+            m_shader_playground->draw(l10n::tr("Enable Shader Playground"));
 
             if (m_shader_playground->value()) {  
                 //for (size_t i = 0; i < m_replacement_shaders.size(); ++i) {
@@ -369,7 +400,7 @@ void Graphics::on_draw_ui() {
 
                     const auto interception_node_open = ImGui::TreeNode("");
                     ImGui::SameLine();
-                    if (ImGui::InputText("Interception Shader", intercepted.name.data(), intercepted.name.size())) {
+                    if (ImGui::InputText(l10n::tr("Interception Shader"), intercepted.name.data(), intercepted.name.size())) {
                         intercepted.hash = sdk::murmur_hash::calc32_as_utf8(intercepted.name.data());
                     }
 
@@ -388,14 +419,14 @@ void Graphics::on_draw_ui() {
                             }
 
                             if (node_open) {
-                                ImGui::Combo("Dispatch Mode", (int*)&replacement.dispatch_mode, s_shader_dispatch_modes.data(), s_shader_dispatch_modes.size());
+                                ImGui::Combo(l10n::tr("Dispatch Mode"), (int*)&replacement.dispatch_mode, s_shader_dispatch_modes.data(), s_shader_dispatch_modes.size());
 
-                                ImGui::InputInt("Thread Group X", (int32_t*)&replacement.thread_group_x);
-                                ImGui::InputInt("Thread Group Y", (int32_t*)&replacement.thread_group_y);
-                                ImGui::InputInt("Thread Group Z", (int32_t*)&replacement.thread_group_z);
-                                ImGui::InputInt("Constant", (int32_t*)&replacement.constant);
+                                ImGui::InputInt(l10n::tr("Thread Group X"), (int32_t*)&replacement.thread_group_x);
+                                ImGui::InputInt(l10n::tr("Thread Group Y"), (int32_t*)&replacement.thread_group_y);
+                                ImGui::InputInt(l10n::tr("Thread Group Z"), (int32_t*)&replacement.thread_group_z);
+                                ImGui::InputInt(l10n::tr("Constant"), (int32_t*)&replacement.constant);
 
-                                ImGui::Checkbox("Valid hash", &replacement.valid_hash);
+                                ImGui::Checkbox(l10n::tr("Valid hash"), &replacement.valid_hash);
 
                                 ImGui::TreePop();
                             }

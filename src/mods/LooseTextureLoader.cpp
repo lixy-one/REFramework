@@ -1,19 +1,31 @@
-﻿#include <algorithm>
+#include <algorithm>
+#include "../Localization.hpp"   // [CN patch]
 #include <array>
+#include "../Localization.hpp"   // [CN patch]
 #include <optional>
+#include "../Localization.hpp"   // [CN patch]
 
 #include <spdlog/spdlog.h>
+#include "../Localization.hpp"   // [CN patch]
 #include <bddisasm.h>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "sdk/ResourceManager.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "utility/Module.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/Scan.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/String.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "LooseFileLoader.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "LooseTextureLoader.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "REFramework.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 LooseTextureLoader& LooseTextureLoader::get() {
     return LooseFileLoader::get()->get_texture_loader();
@@ -67,8 +79,8 @@ void LooseTextureLoader::on_draw_ui() {
     }
 
 
-    if (ImGui::TreeNode("Loose Texture")) {
-        if (m_enabled->draw("Enable")) {
+    if (ImGui::TreeNode(l10n::tr("Loose Texture"))) {
+        if (m_enabled->draw(l10n::tr("Enable"))) {
             g_framework->request_save_config();
         }
 
@@ -76,7 +88,7 @@ void LooseTextureLoader::on_draw_ui() {
             return;
         }
 
-        if (m_disable_texture_cache->draw("Disable Texture Cache (force reload)")) {
+        if (m_disable_texture_cache->draw(l10n::tr("Disable Texture Cache (force reload)"))) {
             g_framework->request_save_config();
         }
 
@@ -93,22 +105,22 @@ void LooseTextureLoader::on_draw_ui() {
         {
             std::lock_guard lock(m_resource_path_counters_mutex);
 
-            ImGui::Text("Unique loose textures loaded: %zu", m_resource_path_counters.size());
+            ImGui::Text(l10n::tr("Unique loose textures loaded: %zu"), m_resource_path_counters.size());
 
-            if (ImGui::Button("Reset Counters")) {
+            if (ImGui::Button(l10n::tr("Reset Counters"))) {
                 m_resource_path_counters.clear();
                 m_recent_resources.clear();
             }
 
-            if (!m_recent_resources.empty() && ImGui::TreeNode("Loaded Loose Textures (recent)")) {
+            if (!m_recent_resources.empty() && ImGui::TreeNode(l10n::tr("Loaded Loose Textures (recent)"))) {
                 for (const auto& path : m_recent_resources) {
                     auto it = m_resource_path_counters.find(path);
                     uint64_t count = (it != m_resource_path_counters.end()) ? it->second : 0;
-                    ImGui::Text("[%llu] %s", count, utility::narrow(path).c_str());
+                    ImGui::Text(l10n::tr("[%llu] %s"), count, utility::narrow(path).c_str());
                 }
 
                 if (m_resource_path_counters.size() > m_recent_resources.size()) {
-                    ImGui::TextDisabled("... and %zu more", m_resource_path_counters.size() - m_recent_resources.size());
+                    ImGui::TextDisabled(l10n::tr("... and %zu more"), m_resource_path_counters.size() - m_recent_resources.size());
                 }
 
                 ImGui::TreePop();

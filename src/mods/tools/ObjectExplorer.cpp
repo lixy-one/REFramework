@@ -1,34 +1,59 @@
 #include <sstream>
+#include "../../Localization.hpp"   // [CN patch]
 #include <fstream>
+#include "../../Localization.hpp"   // [CN patch]
 #include <forward_list>
+#include "../../Localization.hpp"   // [CN patch]
 #include <deque>
+#include "../../Localization.hpp"   // [CN patch]
 #include <algorithm>
+#include "../../Localization.hpp"   // [CN patch]
 #include <regex>
+#include "../../Localization.hpp"   // [CN patch]
 #include <json.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 
 #include <windows.h>
+#include "../../Localization.hpp"   // [CN patch]
 #include <TlHelp32.h>
+#include "../../Localization.hpp"   // [CN patch]
 
 #include <utility/String.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 #include <utility/Scan.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 #include <utility/Module.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 #include <utility/Memory.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 #include <utility/ImGui.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/Renderer.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/MotionFsm2Layer.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 
 #include "../mods/ScriptRunner.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 
 #include "HookManager.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 
 #include "Genny.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "GennyIda.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 
 #include <sdk/REGameObject.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 #include "REFramework.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "ObjectExplorer.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 #include <sdk/RETypeDefDispatch.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 
 using json = nlohmann::json;
 using namespace utility::re_type_accessor;
@@ -367,16 +392,16 @@ void ObjectExplorer::on_draw_dev_ui() {
         m_do_init = false;
     }
 
-    if (!m_do_init && !ImGui::CollapsingHeader(get_name().data())) {
+    if (!m_do_init && !ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
-    if (ImGui::Button("Dump SDK")) {
+    if (ImGui::Button(l10n::tr("Dump SDK"))) {
         std::thread t(&ObjectExplorer::generate_sdk, this, false);
         t.detach();
     }
     
     ImGui::SameLine();
-    if (ImGui::Button("Dump il2cpp json Only")) {
+    if (ImGui::Button(l10n::tr("Dump il2cpp json Only"))) {
         std::thread t(&ObjectExplorer::generate_sdk, this, true);
         t.detach();
     }
@@ -432,7 +457,7 @@ void ObjectExplorer::on_draw_dev_ui() {
     auto curtime = std::chrono::system_clock::now();
 
     // List of globals to choose from
-    if (ImGui::CollapsingHeader("Singletons")) {
+    if (ImGui::CollapsingHeader(l10n::tr("Singletons"))) {
         if (curtime > m_next_refresh) {
             reframework::get_globals()->safe_refresh();
             m_next_refresh = curtime + std::chrono::seconds(1);
@@ -479,7 +504,7 @@ void ObjectExplorer::on_draw_dev_ui() {
         }
     }
 
-    if (ImGui::CollapsingHeader("Native Singletons")) {
+    if (ImGui::CollapsingHeader(l10n::tr("Native Singletons"))) {
         auto& native_singletons = reframework::get_globals()->get_native_singleton_types();
 
         // Display the nodes
@@ -497,30 +522,30 @@ void ObjectExplorer::on_draw_dev_ui() {
         }
     }
 
-    if (ImGui::CollapsingHeader("Renderer")) {
+    if (ImGui::CollapsingHeader(l10n::tr("Renderer"))) {
         auto root_layer = sdk::renderer::get_root_layer();
-        ImGui::Text("Root layer: 0x%p", root_layer);
+        ImGui::Text(l10n::tr("Root layer: 0x%p"), root_layer);
 
         if (root_layer != nullptr) {
             auto [scene_parent, scene_layer] = root_layer->find_layer_recursive("via.render.layer.Scene");
 
             if (scene_layer != nullptr) {
-                ImGui::Text("Scene layer: 0x%p", *scene_layer);
+                ImGui::Text(l10n::tr("Scene layer: 0x%p"), *scene_layer);
             }
 
-            if (ImGui::TreeNode("Root Layer")) {
+            if (ImGui::TreeNode(l10n::tr("Root Layer"))) {
                 handle_address((void*)root_layer);
                 ImGui::TreePop();
             }
 
-            if (scene_layer != nullptr && ImGui::TreeNode("Scene Layer")) {
+            if (scene_layer != nullptr && ImGui::TreeNode(l10n::tr("Scene Layer"))) {
                 handle_address((void*)*scene_layer);
                 ImGui::TreePop();
             }
         }
     }
 
-    if (ImGui::CollapsingHeader("Types")) {
+    if (ImGui::CollapsingHeader(l10n::tr("Types"))) {
         std::vector<uint8_t> fake_type{ 0 };
 
         for (const auto& name : m_sorted_types) {
@@ -539,7 +564,7 @@ void ObjectExplorer::on_draw_dev_ui() {
         }
     }
 
-    if (ImGui::CollapsingHeader("Assemblies")) {
+    if (ImGui::CollapsingHeader(l10n::tr("Assemblies"))) {
         auto tdb = sdk::RETypeDB::get();
 
         for (auto i = 0; i < tdb->get_num_modules(); ++i) {
@@ -550,10 +575,10 @@ void ObjectExplorer::on_draw_dev_ui() {
             std::string_view location{ module.get_location() != nullptr ? module.get_location() : "Unknown" };
             
             if (ImGui::TreeNode(assembly_name.data())) {
-                ImGui::Text("Location: %s", location.data());
-                ImGui::Text("Module Name: %s", module_name.data());
+                ImGui::Text(l10n::tr("Location: %s"), location.data());
+                ImGui::Text(l10n::tr("Module Name: %s"), module_name.data());
                 
-                if (ImGui::TreeNode("Assembly Types")) {
+                if (ImGui::TreeNode(l10n::tr("Assembly Types"))) {
                     std::vector<uint8_t> fake_type{ 0 };
 
                     for (auto& t_index : module.get_types()) {
@@ -573,7 +598,7 @@ void ObjectExplorer::on_draw_dev_ui() {
                     ImGui::TreePop();
                 }
 
-                if (ImGui::TreeNode("Assembly Methods")) {
+                if (ImGui::TreeNode(l10n::tr("Assembly Methods"))) {
                     for (auto& m_index : module.get_methods()) {
                         auto m = tdb->get_method(m_index);
                         if (m == nullptr) {
@@ -585,7 +610,7 @@ void ObjectExplorer::on_draw_dev_ui() {
                     ImGui::TreePop();
                 }
 
-                if (ImGui::TreeNode("Assembly Instantiated Methods")) {
+                if (ImGui::TreeNode(l10n::tr("Assembly Instantiated Methods"))) {
                     for (auto& m_index : module.get_instantiated_methods()) {
                         auto m = tdb->get_method(m_index);
                         if (m == nullptr) {
@@ -597,7 +622,7 @@ void ObjectExplorer::on_draw_dev_ui() {
                     ImGui::TreePop();
                 }
 
-                if (ImGui::TreeNode("Assembly Member References")) {
+                if (ImGui::TreeNode(l10n::tr("Assembly Member References"))) {
                     for (auto& m_index : module.get_member_references()) {
                         if (auto m = tdb->get_method(m_index); m != nullptr) {
                             attempt_display_method(nullptr, *m, true);
@@ -612,9 +637,9 @@ void ObjectExplorer::on_draw_dev_ui() {
         }
     }
 
-    ImGui::Checkbox("Search using Regex", &m_search_using_regex);
+    ImGui::Checkbox(l10n::tr("Search using Regex"), &m_search_using_regex);
 
-    if (m_do_init || ImGui::InputText("Type Name", m_type_name.data(), 256)) {
+    if (m_do_init || ImGui::InputText(l10n::tr("Type Name"), m_type_name.data(), 256)) {
         m_displayed_types.clear();
 
         if (auto t = get_type(m_type_name.data())) {
@@ -645,7 +670,7 @@ void ObjectExplorer::on_draw_dev_ui() {
         }
     }
 
-    if (m_do_init || ImGui::InputText("Method Signature", m_type_member.data(), 256)) {
+    if (m_do_init || ImGui::InputText(l10n::tr("Method Signature"), m_type_member.data(), 256)) {
         m_displayed_types.clear();
         m_type_field[0] = '\0';
 
@@ -660,7 +685,7 @@ void ObjectExplorer::on_draw_dev_ui() {
         }
     }
 
-    if (m_do_init || ImGui::InputText("Field Signature", m_type_field.data(), 256)) {
+    if (m_do_init || ImGui::InputText(l10n::tr("Field Signature"), m_type_field.data(), 256)) {
         m_displayed_types.clear();
         m_type_member[0] = '\0';
 
@@ -675,7 +700,7 @@ void ObjectExplorer::on_draw_dev_ui() {
         }
     }
 
-    if (ImGui::InputText("Method Address", m_method_address.data(), 17, ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsHexadecimal)) {
+    if (ImGui::InputText(l10n::tr("Method Address"), m_method_address.data(), 17, ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsHexadecimal)) {
         m_displayed_method = nullptr;
 
         try {
@@ -687,11 +712,11 @@ void ObjectExplorer::on_draw_dev_ui() {
                 }
             }
         } catch (...) {
-            ImGui::Text("Invalid address");
+            ImGui::Text(l10n::tr("Invalid address"));
         }
     }
 
-    if (ImGui::InputText("TDB Method Address", m_method_tdb_address.data(), 17, ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsHexadecimal)) {
+    if (ImGui::InputText(l10n::tr("TDB Method Address"), m_method_tdb_address.data(), 17, ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsHexadecimal)) {
         m_displayed_method = nullptr;
 
         try {
@@ -708,20 +733,20 @@ void ObjectExplorer::on_draw_dev_ui() {
                     if (((method_address - base) % stride) == 0) {
                         m_displayed_method = (sdk::REMethodDefinition*)method_address;
                     } else {
-                        ImGui::Text("Invalid address");
+                        ImGui::Text(l10n::tr("Invalid address"));
                     }
                 } else {
-                    ImGui::Text("Invalid address");
+                    ImGui::Text(l10n::tr("Invalid address"));
                 }
             }
         } catch (...) {
-            ImGui::Text("Invalid address");
+            ImGui::Text(l10n::tr("Invalid address"));
         }
     }
 
-    ImGui::InputText("REObject Address", m_object_address.data(), 17, ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsHexadecimal);
+    ImGui::InputText(l10n::tr("REObject Address"), m_object_address.data(), 17, ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsHexadecimal);
 
-    if (ImGui::Button("Create new game object"))  {
+    if (ImGui::Button(l10n::tr("Create new game object")))  {
         auto& pinned = m_pinned_objects.emplace_back();
         const auto gameobject_t = sdk::find_type_definition("via.GameObject");
         const auto create_method = gameobject_t->get_method("create(System.String)");
@@ -772,7 +797,7 @@ void ObjectExplorer::on_frame() {
         ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_::ImGuiCond_Once);
         ImGui::PushFont(g_framework->get_default_font(), g_framework->get_font_size());
 
-        if (ImGui::Begin("Read Listeners", &open)) {
+        if (ImGui::Begin(l10n::tr("Read Listeners"), &open)) {
             std::shared_lock _{m_veh_state.listener_mtx};
 
             for (auto& listener : m_veh_state.read_listeners) {
@@ -783,7 +808,7 @@ void ObjectExplorer::on_frame() {
                         if (nearest_method != nullptr) {
                             attempt_display_method(nullptr, *nearest_method, true);
                         } else {
-                            ImGui::Text("0x%p", instruction);
+                            ImGui::Text(l10n::tr("0x%p"), instruction);
                         }
                     }
 
@@ -808,7 +833,7 @@ void ObjectExplorer::on_frame() {
         ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_::ImGuiCond_Once);
         ImGui::PushFont(g_framework->get_default_font(), g_framework->get_font_size());
 
-        if (ImGui::Begin("Pinned objects", &open)) {
+        if (ImGui::Begin(l10n::tr("Pinned objects"), &open)) {
             display_pins();
 
             ImGui::End();
@@ -830,7 +855,7 @@ void ObjectExplorer::on_frame() {
         ImGui::SetNextWindowSize(ImVec2(400, 800), ImGuiCond_::ImGuiCond_Once);
         ImGui::PushFont(g_framework->get_default_font(), g_framework->get_font_size());
 
-        if (ImGui::Begin("Hooked methods", &open)) {
+        if (ImGui::Begin(l10n::tr("Hooked methods"), &open)) {
             display_hooks();
         }
         ImGui::End();
@@ -873,19 +898,19 @@ void ObjectExplorer::display_hooks() {
     std::scoped_lock _{m_hooks_context.mtx};
 
     ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Once);
-    if (ImGui::TreeNode("Options")) {
-        ImGui::Checkbox("Hide uncalled methods", &m_hooks_context.hide_uncalled_methods);
+    if (ImGui::TreeNode(l10n::tr("Options"))) {
+        ImGui::Checkbox(l10n::tr("Hide uncalled methods"), &m_hooks_context.hide_uncalled_methods);
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Reset Stats")) {
+        if (ImGui::Button(l10n::tr("Reset Stats"))) {
             for (auto& h : m_hooked_methods) {
                 h.reset_stats();
             }
         }
 
         // Combobox of the sort method instead
-        if (ImGui::BeginCombo("Sort by", HooksContext::s_sort_method_names[(uint8_t)m_hooks_context.sort_method])) {
+        if (ImGui::BeginCombo(l10n::tr("Sort by"), HooksContext::s_sort_method_names[(uint8_t)m_hooks_context.sort_method])) {
             for (int i = 0; i < HooksContext::s_sort_method_names.size(); i++) {
                 const bool is_selected = (m_hooks_context.sort_method == (HooksContext::SortMethod)i);
 
@@ -902,10 +927,10 @@ void ObjectExplorer::display_hooks() {
         }
 
         // Auto-unhook options
-        ImGui::Checkbox("Enable Auto Unhook", &m_hooks_context.enable_auto_unhook);
+        ImGui::Checkbox(l10n::tr("Enable Auto Unhook"), &m_hooks_context.enable_auto_unhook);
 
         if (m_hooks_context.enable_auto_unhook) {
-            if (ImGui::BeginCombo("Auto Unhook When", HooksContext::s_auto_unhook_method_names[(uint8_t)m_hooks_context.auto_unhook_method])) {
+            if (ImGui::BeginCombo(l10n::tr("Auto Unhook When"), HooksContext::s_auto_unhook_method_names[(uint8_t)m_hooks_context.auto_unhook_method])) {
                 for (int i = 0; i < HooksContext::s_auto_unhook_method_names.size(); i++) {
                     const bool is_selected = (m_hooks_context.auto_unhook_method == (HooksContext::AutoUnhookMethod)i);
 
@@ -922,7 +947,7 @@ void ObjectExplorer::display_hooks() {
             }
 
             // Always make it editable regardless of the auto unhook method, this is intentional
-            ImGui::InputScalar("Max Call Count", ImGuiDataType_U32, &m_hooks_context.auto_unhook_call_count_threshold);
+            ImGui::InputScalar(l10n::tr("Max Call Count"), ImGuiDataType_U32, &m_hooks_context.auto_unhook_call_count_threshold);
         }
 
         ImGui::TreePop();
@@ -986,19 +1011,19 @@ void ObjectExplorer::display_hooks() {
         method_context_menu(h.method, h.name);
 
         if (made_node) {
-            ImGui::Checkbox("Skip function call", &h.skip);
-            ImGui::TextWrapped("Call count: %i", h.stats.call_count);
+            ImGui::Checkbox(l10n::tr("Skip function call"), &h.skip);
+            ImGui::TextWrapped(l10n::tr("Call count: %i"), h.stats.call_count);
 
             ImGui::SameLine();
             const float delta_ms = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(h.stats.last_call_delta).count();
             const float total_ms = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(h.stats.total_call_time).count();
-            ImGui::TextWrapped("Time (ms): Delta %f, Total %f", delta_ms, total_ms);
+            ImGui::TextWrapped(l10n::tr("Time (ms): Delta %f, Total %f"), delta_ms, total_ms);
 
-            if (ImGui::TreeNode("Info")) {
+            if (ImGui::TreeNode(l10n::tr("Info"))) {
                 ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Once);
-                if (ImGui::TreeNode("Callers")) {
+                if (ImGui::TreeNode(l10n::tr("Callers"))) {
                     // sort callers combo
-                    if (ImGui::BeginCombo("Sort Callers by", HookedMethod::s_sort_callers_names[(uint8_t)h.sort_callers_method])) {
+                    if (ImGui::BeginCombo(l10n::tr("Sort Callers by"), HookedMethod::s_sort_callers_names[(uint8_t)h.sort_callers_method])) {
                         for (int i = 0; i < HookedMethod::s_sort_callers_names.size(); i++) {
                             const bool is_selected = (h.sort_callers_method == (HookedMethod::SortCallersMethod)i);
 
@@ -1050,9 +1075,9 @@ void ObjectExplorer::display_hooks() {
                     ImGui::TreePop();
                 }
 
-                if (ImGui::TreeNode("Return Addresses")) {
+                if (ImGui::TreeNode(l10n::tr("Return Addresses"))) {
                     for (auto addr : h.return_addresses) {
-                        ImGui::Text("0x%p", addr);
+                        ImGui::Text(l10n::tr("0x%p"), addr);
 
                         if (ImGui::IsItemClicked()) {
                             ImGui::SetClipboardText((std::stringstream{} << std::hex << addr).str().c_str());
@@ -1061,9 +1086,9 @@ void ObjectExplorer::display_hooks() {
                     ImGui::TreePop();
                 }
 
-                if (ImGui::TreeNode("Thread IDs")) {
+                if (ImGui::TreeNode(l10n::tr("Thread IDs"))) {
                     for (auto tid : h.stats.thread_ids) {
-                        ImGui::Text("%i", tid);
+                        ImGui::Text(l10n::tr("%i"), tid);
                     }
                     ImGui::TreePop();
                 }
@@ -2697,7 +2722,7 @@ void ObjectExplorer::handle_address(Address address, int32_t offset, Address par
             const auto made_array_entries = ImGui::TreeNode(real_address.get(sizeof(REArrayBase)), "Array Entries");
 
             ImGui::SameLine();
-            ImGui::Text("[%d]", arr->numElements);
+            ImGui::Text(l10n::tr("[%d]"), arr->numElements);
 
             if (made_array_entries) {
                 const bool entry_is_val = utility::re_array::get_contained_type(arr)->get_vm_obj_type() == via::clr::VMObjType::ValType;
@@ -2759,7 +2784,7 @@ void ObjectExplorer::handle_address(Address address, int32_t offset, Address par
 void ObjectExplorer::handle_game_object(REGameObject* game_object) {
     ImGui::PushID((void*)game_object);
 
-    if (ImGui::InputText("Add Component", m_add_component_name.data(), 256, ImGuiInputTextFlags_::ImGuiInputTextFlags_EnterReturnsTrue)) {
+    if (ImGui::InputText(l10n::tr("Add Component"), m_add_component_name.data(), 256, ImGuiInputTextFlags_::ImGuiInputTextFlags_EnterReturnsTrue)) {
         const auto tdef = sdk::find_type_definition(m_add_component_name.data());
 
         if (tdef != nullptr) {
@@ -2794,7 +2819,7 @@ void ObjectExplorer::handle_game_object(REGameObject* game_object) {
 
     auto game_object_name = game_object->get_name();
 
-    ImGui::Text("Name: %s", game_object_name.c_str());
+    ImGui::Text(l10n::tr("Name: %s"), game_object_name.c_str());
     make_tree_offset(game_object, REGameObject::offset_of_transform(), "Transform");
     make_tree_offset(game_object, REGameObject::offset_of_folder(), "Folder");
 
@@ -2821,7 +2846,7 @@ void ObjectExplorer::handle_component(REComponent* component) {
         }
     };
 
-    if (ImGui::Button("Destroy Component")) {
+    if (ImGui::Button(l10n::tr("Destroy Component"))) {
         sdk::call_object_func<void*>(component, "destroy", sdk::get_thread_context(), component);
     }
 
@@ -2878,7 +2903,7 @@ void ObjectExplorer::handle_transform(RETransform* transform) {
 }
 
 void ObjectExplorer::handle_render_layer(sdk::renderer::RenderLayer* layer) {
-    if (ImGui::Button("Attempt to Clone")) {
+    if (ImGui::Button(l10n::tr("Attempt to Clone"))) {
         layer->add_layer(layer->get_type_definition()->get_type(), layer->m_priority)->clone_layers(layer);
     }
 
@@ -2937,7 +2962,7 @@ void ObjectExplorer::handle_behavior_tree_node(sdk::behaviortree::BehaviorTree* 
     ImGui::PushID(node);
 
     // Activate node
-    if (bhvt != nullptr && ImGui::Button("X")) {
+    if (bhvt != nullptr && ImGui::Button(l10n::tr("X"))) {
         bhvt->set_current_node(node, tree_idx);
     }
 
@@ -2949,11 +2974,11 @@ void ObjectExplorer::handle_behavior_tree_node(sdk::behaviortree::BehaviorTree* 
     const auto made_node = ImGui::TreeNode(node, node_full_name.data());
 
     if (made_node) {
-        ImGui::Text("ID: %u", node->get_id());
-        ImGui::Text("Status1: %i", (int32_t)node->get_status1());
-        ImGui::Text("Status2: %i", (int32_t)node->get_status2());
+        ImGui::Text(l10n::tr("ID: %u"), node->get_id());
+        ImGui::Text(l10n::tr("Status1: %i"), (int32_t)node->get_status1());
+        ImGui::Text(l10n::tr("Status2: %i"), (int32_t)node->get_status2());
 
-        if (ImGui::TreeNode("Children")) {
+        if (ImGui::TreeNode(l10n::tr("Children"))) {
             for (auto child : node->get_children()) {
                 handle_behavior_tree_node(bhvt, child, tree_idx);
             }
@@ -2961,13 +2986,13 @@ void ObjectExplorer::handle_behavior_tree_node(sdk::behaviortree::BehaviorTree* 
             ImGui::TreePop();
         }
 
-        if (ImGui::TreeNode("Selector")) {
+        if (ImGui::TreeNode(l10n::tr("Selector"))) {
             handle_address(node->get_selector());
 
             ImGui::TreePop();
         }
 
-        if (ImGui::TreeNode("Selector Condition")) {
+        if (ImGui::TreeNode(l10n::tr("Selector Condition"))) {
             handle_address(node->get_selector_condition());
 
             ImGui::TreePop();
@@ -3018,11 +3043,11 @@ void ObjectExplorer::handle_type(REManagedObject* obj, REType* t) {
 
         // Topmost type
         if (type_info == t && is_real_object) {
-            ImGui::Text("Size: 0x%X", obj->get_size());
+            ImGui::Text(l10n::tr("Size: 0x%X"), obj->get_size());
         }
         // Super types
         else {
-            ImGui::Text("Size: 0x%X", get_size(type_info));
+            ImGui::Text(l10n::tr("Size: 0x%X"), get_size(type_info));
         }
 
         ++count;
@@ -3042,7 +3067,7 @@ void ObjectExplorer::handle_type(REManagedObject* obj, REType* t) {
 
                     if (generic_td != nullptr) {
                         if (stretched_tree_node("Generic Type Definition")) {
-                            ImGui::Text("Name: %s", generic_td->get_full_name().c_str()); // just in-case the get_type() returns nullptr.
+                            ImGui::Text(l10n::tr("Name: %s"), generic_td->get_full_name().c_str()); // just in-case the get_type() returns nullptr.
                             display_native_methods(nullptr, generic_td);
                             display_native_fields(nullptr, generic_td);
                             ImGui::TreePop();
@@ -3087,13 +3112,13 @@ void ObjectExplorer::display_enum_value(std::string_view name, int64_t value) {
 
     auto first_found = get_enum_value_name(name, (int64_t)value);
     if (!first_found.empty()) {
-        ImGui::Text("%lld: ", value);
+        ImGui::Text(l10n::tr("%lld: "), value);
         ImGui::SameLine();
         ImGui::TextColored(VARIABLE_COLOR, "%s", first_found.c_str());
     }
     // Assume it's a set of flags then
     else {
-        ImGui::Text("%lld", value);
+        ImGui::Text(l10n::tr("%lld"), value);
 
         std::vector<std::string> names{};
 
@@ -3159,10 +3184,10 @@ void ObjectExplorer::display_reflection_methods(REManagedObject* obj, REType* ty
             }
 
             if (made_node) {
-                ImGui::Text("Address: 0x%p", descriptor);
-                ImGui::Text("Function: 0x%p", descriptor->get_functionPtr());
+                ImGui::Text(l10n::tr("Address: 0x%p"), descriptor);
+                ImGui::Text(l10n::tr("Function: 0x%p"), descriptor->get_functionPtr());
 
-                if (descriptor->get_functionPtr() != nullptr && ImGui::Button("Attempt to call")) {
+                if (descriptor->get_functionPtr() != nullptr && ImGui::Button(l10n::tr("Attempt to call"))) {
                     char poop[0x100]{ 0 };
                     obj->call_method(descriptor->get_name(), poop);
                 }
@@ -3170,7 +3195,7 @@ void ObjectExplorer::display_reflection_methods(REManagedObject* obj, REType* ty
                 auto t2 = get_type(ret);
 
                 if (t2 == nullptr || t2 == type_info) {
-                    ImGui::Text("Type: %s", ret.c_str());
+                    ImGui::Text(l10n::tr("Type: %s"), ret.c_str());
                 }
                 else {
                     std::vector<uint8_t> fake_object(get_size(t2), 0);
@@ -3255,15 +3280,15 @@ void ObjectExplorer::display_reflection_properties(REManagedObject* obj, REType*
                 }
 
                 if (ImGui::TreeNode(variable, "Additional Information")) {
-                    ImGui::Text("Address: 0x%p", variable);
-                    ImGui::Text("Function: 0x%p", variable->get_function());
+                    ImGui::Text(l10n::tr("Address: 0x%p"), variable);
+                    ImGui::Text(l10n::tr("Function: 0x%p"), variable->get_function());
 
                     // Display type information
                     if (variable->get_typeName() != nullptr) {
                         auto t2 = get_type(variable->get_typeName());
 
                         if (t2 == nullptr || t2 == type_info) {
-                            ImGui::Text("Type: %s", variable->get_typeName());
+                            ImGui::Text(l10n::tr("Type: %s"), variable->get_typeName());
                         }
                         else {
                             std::vector<uint8_t> fake_object(get_size(t2), 0);
@@ -3274,16 +3299,16 @@ void ObjectExplorer::display_reflection_properties(REManagedObject* obj, REType*
 
                     auto prop_flags = utility::reflection_property::get_flags(variable);
 
-                    ImGui::Text("TypeKind: %i (%s)", prop_flags.type_kind, get_enum_value_name("via.reflection.TypeKind", (int64_t)prop_flags.type_kind).c_str());
-                    ImGui::Text("Qualifiers: %i", prop_flags.type_qual);
-                    ImGui::Text("Attributes: %i", prop_flags.type_attr);
+                    ImGui::Text(l10n::tr("TypeKind: %i (%s)"), prop_flags.type_kind, get_enum_value_name("via.reflection.TypeKind", (int64_t)prop_flags.type_kind).c_str());
+                    ImGui::Text(l10n::tr("Qualifiers: %i"), prop_flags.type_qual);
+                    ImGui::Text(l10n::tr("Attributes: %i"), prop_flags.type_attr);
                     
-                    ImGui::Text("Size: %i", utility::reflection_property::get_size(variable));
-                    ImGui::Text("ManagedStr: %i", prop_flags.managed_str);
-                    ImGui::Text("VarType: %i", variable->get_variableType());
+                    ImGui::Text(l10n::tr("Size: %i"), utility::reflection_property::get_size(variable));
+                    ImGui::Text(l10n::tr("ManagedStr: %i"), prop_flags.managed_str);
+                    ImGui::Text(l10n::tr("VarType: %i"), variable->get_variableType());
 
                     if (variable->get_staticVariableData() != nullptr) {
-                        ImGui::Text("GlobalIndex: %i", variable->get_staticVariableData()->variableIndex);
+                        ImGui::Text(l10n::tr("GlobalIndex: %i"), variable->get_staticVariableData()->variableIndex);
                     }
 
                     ImGui::TreePop();
@@ -3391,7 +3416,7 @@ void ObjectExplorer::display_native_fields(REManagedObject* obj, sdk::RETypeDefi
             const auto made_node = widget_with_context(data, field_name, 
                 [&]() { return stretched_tree_node(f, "%s", field_type_name.c_str()); },
                 [&]() {
-                    if (is_real_object && ptr_to_data != nullptr && ImGui::Selectable("Listen for reads")) {
+                    if (is_real_object && ptr_to_data != nullptr && ImGui::Selectable(l10n::tr("Listen for reads"))) {
                         install_veh();
                         m_veh_state.add_read_listener((uintptr_t)data, f);
                     }
@@ -3566,32 +3591,32 @@ void ObjectExplorer::attempt_display_method(REManagedObject* obj, sdk::REMethodD
     if (made_node) {
         if (ImGui::BeginTable("##method", 4,  ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {
             ImGui::TableNextColumn();
-            ImGui::Text("Address");
+            ImGui::Text(l10n::tr("Address"));
 
             ImGui::TableNextColumn();
-            ImGui::Text("Virtual Index");
+            ImGui::Text(l10n::tr("Virtual Index"));
 
             ImGui::TableNextColumn();
-            ImGui::Text("Flags");
+            ImGui::Text(l10n::tr("Flags"));
 
             ImGui::TableNextColumn();
-            ImGui::Text("Impl flags");
+            ImGui::Text(l10n::tr("Impl flags"));
             
             // address
             ImGui::TableNextColumn();
-            ImGui::Text("0x%p", method_ptr);
+            ImGui::Text(l10n::tr("0x%p"), method_ptr);
 
             // virtual index
             ImGui::TableNextColumn();
-            ImGui::Text("%i", method_virtual_index);
+            ImGui::Text(l10n::tr("%i"), method_virtual_index);
 
             // flags
             ImGui::TableNextColumn();
-            ImGui::Text("%s", get_full_enum_value_name("via.clr.MethodFlag", method_flags).c_str());
+            ImGui::Text(l10n::tr("%s"), get_full_enum_value_name("via.clr.MethodFlag", method_flags).c_str());
             
             // impl flags
             ImGui::TableNextColumn();
-            ImGui::Text("%s", get_full_enum_value_name("via.clr.MethodImplFlag", method_impl_flags).c_str());
+            ImGui::Text(l10n::tr("%s"), get_full_enum_value_name("via.clr.MethodImplFlag", method_impl_flags).c_str());
 
             ImGui::EndTable();
         }
@@ -3599,11 +3624,11 @@ void ObjectExplorer::attempt_display_method(REManagedObject* obj, sdk::REMethodD
         if (method_param_types.size() > 0) {
             if (ImGui::BeginTable("##params", 3,  ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {
                 ImGui::TableNextColumn();
-                ImGui::Text("Index");
+                ImGui::Text(l10n::tr("Index"));
                 ImGui::TableNextColumn();
-                ImGui::Text("Type");
+                ImGui::Text(l10n::tr("Type"));
                 ImGui::TableNextColumn();
-                ImGui::Text("Name");
+                ImGui::Text(l10n::tr("Name"));
 
                 for (auto i = 0; i < method_param_types.size(); i++) {
                     ImGui::TableNextColumn();
@@ -3632,7 +3657,7 @@ void ObjectExplorer::attempt_display_method(REManagedObject* obj, sdk::REMethodD
 
         if (ImGui::BeginTable("##calls", 1,  ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {
             ImGui::TableNextColumn();
-            ImGui::Text("Called Method");
+            ImGui::Text(l10n::tr("Called Method"));
 
             // Show a list of methods this method calls
             if (m_method_meta_infos.contains((uintptr_t)method_ptr)) {
@@ -3647,13 +3672,13 @@ void ObjectExplorer::attempt_display_method(REManagedObject* obj, sdk::REMethodD
 
         if (ImGui::BeginTable("##disassembly", 3,  ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {
             ImGui::TableNextColumn();
-            ImGui::Text("Address");
+            ImGui::Text(l10n::tr("Address"));
 
             ImGui::TableNextColumn();
-            ImGui::Text("Bytes");
+            ImGui::Text(l10n::tr("Bytes"));
 
             ImGui::TableNextColumn();
-            ImGui::Text("Instruction");
+            ImGui::Text(l10n::tr("Instruction"));
 
             // Show a short disassembly of the method
             auto ip = (uintptr_t)method_ptr;
@@ -3669,7 +3694,7 @@ void ObjectExplorer::attempt_display_method(REManagedObject* obj, sdk::REMethodD
                 NdToText(&*decoded, 0, sizeof(buffer), buffer);
 
                 ImGui::TableNextColumn();
-                ImGui::Text("0x%p", ip);
+                ImGui::Text(l10n::tr("0x%p"), ip);
 
                 ImGui::TableNextColumn();
                 // show the bytes
@@ -3678,7 +3703,7 @@ void ObjectExplorer::attempt_display_method(REManagedObject* obj, sdk::REMethodD
                         ImGui::SameLine();
                     }
 
-                    if (ip) ImGui::Text("%02X", ((uint8_t*)ip)[j]);
+                    if (ip) ImGui::Text(l10n::tr("%02X"), ((uint8_t*)ip)[j]);
                 }
 
                 ImGui::TableNextColumn();
@@ -3742,7 +3767,7 @@ void ObjectExplorer::attempt_display_field(REManagedObject* obj, VariableDescrip
     const auto is_pointer = prop_flags.managed_str || prop_flags.type_attr == 1 || prop_flags.type_attr == 2;
 
     if (is_pointer && *(void**)&raw_data == nullptr) {
-        ImGui::Text("Null pointer");
+        ImGui::Text(l10n::tr("Null pointer"));
         return;
     }
 
@@ -3807,7 +3832,7 @@ void ObjectExplorer::attempt_display_field(REManagedObject* obj, VariableDescrip
 
 void ObjectExplorer::display_data(void* data, void* real_data, std::string type_name, bool is_enum, bool managed_str, const sdk::RETypeDefinition* override_def) {
     if (data == nullptr) {
-        ImGui::Text("Null pointer");
+        ImGui::Text(l10n::tr("Null pointer"));
         return;
     }
 
@@ -3855,89 +3880,89 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
     case "System.UInt64"_fnv:
     case "size_t"_fnv:
     case "u64"_fnv:
-        ImGui::Text("0x%llX", *(uint64_t*)data);
+        ImGui::Text(l10n::tr("0x%llX"), *(uint64_t*)data);
 
         if (real_data != nullptr) {
             auto& int_val = *(uint64_t*)real_data;
 
-            ImGui::DragScalar("Set Value", ImGuiDataType_U64, &int_val, 1.0f, &min_uint64, &max_uint64);
+            ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_U64, &int_val, 1.0f, &min_uint64, &max_uint64);
         }
 
         break;
     case "System.Int64"_fnv:
     case "s64"_fnv:
-        ImGui::Text("0x%llX", *(int64_t*)data);
+        ImGui::Text(l10n::tr("0x%llX"), *(int64_t*)data);
 
         if (real_data != nullptr) {
             auto& int_val = *(int64_t*)real_data;
 
-            ImGui::DragScalar("Set Value", ImGuiDataType_S64, &int_val, 1.0f, &min_int64, &max_int64);
+            ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_S64, &int_val, 1.0f, &min_int64, &max_int64);
         }
 
         break;
     case "System.UInt32"_fnv:
     case "u32"_fnv:
-        ImGui::Text("0x%X", *(uint32_t*)data);
+        ImGui::Text(l10n::tr("0x%X"), *(uint32_t*)data);
 
         if (real_data != nullptr) {
             auto& int_val = *(uint32_t*)real_data;
 
-            ImGui::DragScalar("Set Value", ImGuiDataType_U32, &int_val, 1.0f, &min_uint, &max_uint);
+            ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_U32, &int_val, 1.0f, &min_uint, &max_uint);
         }
 
         break;
     case "System.Int32"_fnv:
     case "s32"_fnv:
-        ImGui::Text("0x%X", *(int32_t*)data);
+        ImGui::Text(l10n::tr("0x%X"), *(int32_t*)data);
 
         if (real_data != nullptr) {
             auto& int_val = *(int32_t*)real_data;
 
-            ImGui::DragInt("Set Value", (int*)&int_val, 1.0f, min_int, max_int);
+            ImGui::DragInt(l10n::tr("Set Value"), (int*)&int_val, 1.0f, min_int, max_int);
         }
 
         break;
 
     case "System.UInt16"_fnv:
     case "u16"_fnv:
-        ImGui::Text("0x%04X", *(uint16_t*)data);
+        ImGui::Text(l10n::tr("0x%04X"), *(uint16_t*)data);
 
         if (real_data != nullptr) {
             auto& int_val = *(uint16_t*)real_data;
 
-            ImGui::DragScalar("Set Value", ImGuiDataType_U16, &int_val, 1.0f, &min_u16, &max_u16);
+            ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_U16, &int_val, 1.0f, &min_u16, &max_u16);
         }
         break;
 
     case "System.Int16"_fnv:
     case "s16"_fnv:
-        ImGui::Text("0x%04X", *(int16_t*)data);
+        ImGui::Text(l10n::tr("0x%04X"), *(int16_t*)data);
 
         if (real_data != nullptr) {
             auto& int_val = *(int16_t*)real_data;
 
-            ImGui::DragScalar("Set Value", ImGuiDataType_S16, &int_val, 1.0f, &min_i16, &max_i16);
+            ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_S16, &int_val, 1.0f, &min_i16, &max_i16);
         }
         break;
     case "System.Byte"_fnv:
     case "u8"_fnv:
-        ImGui::Text("0x%02X", *(uint8_t*)data);
+        ImGui::Text(l10n::tr("0x%02X"), *(uint8_t*)data);
 
         if (real_data != nullptr) {
             auto& int_val = *(uint8_t*)real_data;
 
-            ImGui::DragScalar("Set Value", ImGuiDataType_U8, &int_val, 1.0f, &min_u8, &max_u8);
+            ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_U8, &int_val, 1.0f, &min_u8, &max_u8);
         }
 
         break;
     case "System.SByte"_fnv:
     case "s8"_fnv:
-        ImGui::Text("0x%02X", *(int8_t*)data);
+        ImGui::Text(l10n::tr("0x%02X"), *(int8_t*)data);
 
         if (real_data != nullptr) {
             auto& int_val = *(int8_t*)real_data;
 
-            ImGui::DragScalar("Set Value", ImGuiDataType_S8, &int_val, 1.0f, &min_i8, &max_i8);
+            ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_S8, &int_val, 1.0f, &min_i8, &max_i8);
         }
 
         break;
@@ -3945,12 +3970,12 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
     case "System.Single"_fnv:
     case "f32"_fnv:
     case "float"_fnv: {
-        ImGui::Text("%f", *(float*)data);
+        ImGui::Text(l10n::tr("%f"), *(float*)data);
 
         if (real_data != nullptr) {
             auto& float_val = *(float*)real_data;
 
-            ImGui::DragFloat("Set Value", &float_val, 0.01f, min_float, max_float);
+            ImGui::DragFloat(l10n::tr("Set Value"), &float_val, 0.01f, min_float, max_float);
         }
 
         break;
@@ -3959,24 +3984,24 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
     case "System.Boolean"_fnv:
     case "bool"_fnv:
         if (*(bool*)data) {
-            ImGui::TextUnformatted("true");
+            ImGui::TextUnformatted(l10n::tr("true"));
         } else {
-            ImGui::TextUnformatted("false");
+            ImGui::TextUnformatted(l10n::tr("false"));
         }
 
         if (real_data != nullptr) {
             auto& bool_val = *(bool*)real_data;
 
-            ImGui::Checkbox("Set Value", &bool_val);
+            ImGui::Checkbox(l10n::tr("Set Value"), &bool_val);
         }
 
         break;
     case "System.Char"_fnv:
     case "c16"_fnv:
-        ImGui::Text("%s", utility::narrow((wchar_t*)data).c_str());
+        ImGui::Text(l10n::tr("%s"), utility::narrow((wchar_t*)data).c_str());
         break;
     case "c8"_fnv:
-        ImGui::Text("%s", (char*)data);
+        ImGui::Text(l10n::tr("%s"), (char*)data);
         break;
     //case "System.Nullable`1<via.vec2>"_fnv:
     case "via.Rect"_fnv:
@@ -3985,12 +4010,12 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
     case "via.vec2"_fnv: {
         auto vec = (Vector2f*)data;
 
-        ImGui::Text("%f %f", vec->x, vec->y);
+        ImGui::Text(l10n::tr("%f %f"), vec->x, vec->y);
 
         if (real_data != nullptr) {
             auto& vec_val = *(Vector2f*)real_data;
 
-            ImGui::DragFloat2("Set Value", (float*)&vec_val, 0.01f, min_float, max_float);
+            ImGui::DragFloat2(l10n::tr("Set Value"), (float*)&vec_val, 0.01f, min_float, max_float);
         }
 
         break;
@@ -4001,13 +4026,13 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
         auto vec = (Vector3f*)data;
 
         if (vec != nullptr) {
-            ImGui::Text("%f %f %f", vec->x, vec->y, vec->z);
+            ImGui::Text(l10n::tr("%f %f %f"), vec->x, vec->y, vec->z);
         }
 
         if (real_data != nullptr) {
             auto& vec_val = *(Vector3f*)real_data;
 
-            ImGui::DragFloat3("Set Value", (float*)&vec_val, 0.01f, min_float, max_float);
+            ImGui::DragFloat3(l10n::tr("Set Value"), (float*)&vec_val, 0.01f, min_float, max_float);
         }
 
         break;
@@ -4016,12 +4041,12 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
     case "via.vec4"_fnv:
     case "via.Quaternion"_fnv: {
         auto& quat = *(glm::quat*)data;
-        ImGui::Text("%f %f %f %f", quat.x, quat.y, quat.z, quat.w);
+        ImGui::Text(l10n::tr("%f %f %f %f"), quat.x, quat.y, quat.z, quat.w);
 
         if (real_data != nullptr) {
             auto& vec_val = *(Vector4f*)real_data;
 
-            ImGui::DragFloat4("Set Value", (float*)&vec_val, 0.01f, min_float, max_float);
+            ImGui::DragFloat4(l10n::tr("Set Value"), (float*)&vec_val, 0.01f, min_float, max_float);
         }
 
         break;
@@ -4030,13 +4055,13 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
         auto& mat = *(glm::mat4*)data;
 
         for (int i = 0; i < 4; i++) {
-            ImGui::Text("%f %f %f %f", mat[i].x, mat[i].y, mat[i].z, mat[i].w);
+            ImGui::Text(l10n::tr("%f %f %f %f"), mat[i].x, mat[i].y, mat[i].z, mat[i].w);
 
             if (real_data != nullptr) {
                 auto& mat_val = *(glm::mat4*)real_data;
 
                 ImGui::PushID(&mat_val[i]);
-                ImGui::DragFloat4("Set Value", (float*)&mat_val[i], 0.01f, min_float, max_float);
+                ImGui::DragFloat4(l10n::tr("Set Value"), (float*)&mat_val[i], 0.01f, min_float, max_float);
                 ImGui::PopID();
             }
         }
@@ -4049,12 +4074,12 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
             auto ptr = (SystemString*)data;
 
             if (ptr != nullptr) {
-                ImGui::Text("%s", utility::re_string::get_string(*ptr).c_str());
+                ImGui::Text(l10n::tr("%s"), utility::re_string::get_string(*ptr).c_str());
             } else {
-                ImGui::Text("");
+                ImGui::Text(l10n::tr(""));
             }
         } else {
-            ImGui::Text("%s", utility::re_string::get_string(*(REString*)data).c_str());
+            ImGui::Text(l10n::tr("%s"), utility::re_string::get_string(*(REString*)data).c_str());
         }
     } break;
         default: {
@@ -4066,7 +4091,7 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
                             if (real_data != nullptr) {
                                 auto& int_val = *(int8_t*)real_data;
 
-                                ImGui::DragScalar("Set Value", ImGuiDataType_S8, &int_val, 1.0f, &min_i8, &max_i8);
+                                ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_S8, &int_val, 1.0f, &min_i8, &max_i8);
                             }
                             break;
                         case 2:
@@ -4074,7 +4099,7 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
                             if (real_data != nullptr) {
                                 auto& int_val = *(int16_t*)real_data;
 
-                                ImGui::DragScalar("Set Value", ImGuiDataType_S16, &int_val, 1.0f, &min_i16, &max_i16);
+                                ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_S16, &int_val, 1.0f, &min_i16, &max_i16);
                             }
                             break;
                         case 4:
@@ -4082,7 +4107,7 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
                             if (real_data != nullptr) {
                                 auto& int_val = *(int32_t*)real_data;
 
-                                ImGui::DragInt("Set Value", (int*)&int_val, 1.0f, min_int, max_int);
+                                ImGui::DragInt(l10n::tr("Set Value"), (int*)&int_val, 1.0f, min_int, max_int);
                             }
                             break;
                         case 8:
@@ -4090,17 +4115,17 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
                             if (real_data != nullptr) {
                                 auto& int_val = *(int64_t*)real_data;
 
-                                ImGui::DragScalar("Set Value", ImGuiDataType_S64, &int_val, 1.0f, &min_int64, &max_int64);
+                                ImGui::DragScalar(l10n::tr("Set Value"), ImGuiDataType_S64, &int_val, 1.0f, &min_int64, &max_int64);
                             }
                             break;
                         default:
-                            ImGui::Text("Invalid enum size, falling back to int32");
+                            ImGui::Text(l10n::tr("Invalid enum size, falling back to int32"));
 
                             display_enum_value(type_name, *(int32_t*)data);
                             if (real_data != nullptr) {
                                 auto& int_val = *(int32_t*)real_data;
 
-                                ImGui::DragInt("Set Value", (int*)&int_val, 1.0f, min_int, max_int);
+                                ImGui::DragInt(l10n::tr("Set Value"), (int*)&int_val, 1.0f, min_int, max_int);
                             }
                             break;
                     }
@@ -4111,7 +4136,7 @@ void ObjectExplorer::display_data(void* data, void* real_data, std::string type_
                     if (real_data != nullptr) {
                         auto& int_val = *(int32_t*)real_data;
 
-                        ImGui::DragInt("Set Value", (int*)&int_val, 1.0f, min_int, max_int);
+                        ImGui::DragInt(l10n::tr("Set Value"), (int*)&int_val, 1.0f, min_int, max_int);
                     }
                 }
             } 
@@ -4311,25 +4336,25 @@ bool ObjectExplorer::widget_with_context(void* address, const std::string& name,
 
 void ObjectExplorer::context_menu(void* address, std::optional<std::string> name, std::optional<std::function<void()>> additional_context) {
     if (ImGui::BeginPopupContextItem()) {
-        if (ImGui::Selectable("Copy Address")) {
+        if (ImGui::Selectable(l10n::tr("Copy Address"))) {
             std::stringstream ss;
             ss << std::hex << (uintptr_t)address;
 
             ImGui::SetClipboardText(ss.str().c_str());
         }
 
-        if (name && ImGui::Selectable("Copy Name")) {
+        if (name && ImGui::Selectable(l10n::tr("Copy Name"))) {
             ImGui::SetClipboardText(name->c_str());
         }
 
         const auto is_managed_object = REManagedObject::is_managed_object(address);
 
         if (auto it = std::find_if(m_pinned_objects.begin(), m_pinned_objects.end(), [address](auto& pinned_obj) { return pinned_obj.address == address; }); it != m_pinned_objects.end()) {
-            if (ImGui::Selectable("Unpin")) {
+            if (ImGui::Selectable(l10n::tr("Unpin"))) {
                 m_pinned_objects.erase(it);
             }
         } else {
-            if (ImGui::Selectable("Pin")) {
+            if (ImGui::Selectable(l10n::tr("Pin"))) {
                 auto& pinned = m_pinned_objects.emplace_back();
 
                 const auto type_definition = is_managed_object ? ((REManagedObject*)address)->get_type_definition() : nullptr;
@@ -4341,7 +4366,7 @@ void ObjectExplorer::context_menu(void* address, std::optional<std::string> name
         }
 
         // Log component hierarchy to disk
-        if (is_managed_object && ((REManagedObject*)address)->is_a("via.Component") && ImGui::Selectable("Log Hierarchy")) {
+        if (is_managed_object && ((REManagedObject*)address)->is_a("via.Component") && ImGui::Selectable(l10n::tr("Log Hierarchy"))) {
             auto comp = (REComponent*)address;
 
             for (auto obj = comp; obj; obj = obj->get_child_component()) {
@@ -4363,7 +4388,7 @@ void ObjectExplorer::context_menu(void* address, std::optional<std::string> name
             }
         }
 
-        if (is_managed_object && ImGui::Selectable("Hook All Methods")) {
+        if (is_managed_object && ImGui::Selectable(l10n::tr("Hook All Methods"))) {
             const auto t = ((REManagedObject*)address)->get_type_definition();
 
             if (t != nullptr) {
@@ -4487,7 +4512,7 @@ void ObjectExplorer::method_context_menu(sdk::REMethodDefinition* method, std::o
         auto it = std::find_if(m_hooked_methods.begin(), m_hooked_methods.end(), [method](auto& hook) { return hook.method == method; });
 
         if (it == m_hooked_methods.end()) {
-            if (ImGui::Selectable("Hook")) {
+            if (ImGui::Selectable(l10n::tr("Hook"))) {
                 std::scoped_lock _{m_job_mutex};
 
                 m_frame_jobs.push_back([this, method, name]() {
@@ -4495,7 +4520,7 @@ void ObjectExplorer::method_context_menu(sdk::REMethodDefinition* method, std::o
                 });
             }
         } else {
-            if (ImGui::Selectable("Unhook")) {
+            if (ImGui::Selectable(l10n::tr("Unhook"))) {
                 std::scoped_lock _{m_job_mutex};
 
                 m_frame_jobs.push_back([this, it]() {
@@ -4505,7 +4530,7 @@ void ObjectExplorer::method_context_menu(sdk::REMethodDefinition* method, std::o
             }
         }
 
-        if (ImGui::Selectable("Hook All Methods")) {
+        if (ImGui::Selectable(l10n::tr("Hook All Methods"))) {
             const auto declaring_type = method->get_declaring_type();
 
             if (declaring_type != nullptr) {
@@ -4517,7 +4542,7 @@ void ObjectExplorer::method_context_menu(sdk::REMethodDefinition* method, std::o
             }
         }
 
-        if (ImGui::Selectable("Unhook All Methods")) {
+        if (ImGui::Selectable(l10n::tr("Unhook All Methods"))) {
             const auto declaring_type = method->get_declaring_type();
 
             if (declaring_type != nullptr) {
@@ -4532,7 +4557,7 @@ void ObjectExplorer::method_context_menu(sdk::REMethodDefinition* method, std::o
         // Allow us to call really simple methods with no params
         if (method->get_param_types().size() == 0) {
             if (obj != nullptr || method->is_static()) {
-                if (ImGui::Selectable("Call")) {
+                if (ImGui::Selectable(l10n::tr("Call"))) {
                     method->invoke(obj, {});
                 }
             }

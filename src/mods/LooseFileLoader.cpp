@@ -1,12 +1,19 @@
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/RETypeDB.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <utility/Scan.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <utility/Module.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include "REFramework.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include <spdlog/sinks/basic_file_sink.h>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "LooseFileLoader.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 LooseFileLoader* g_loose_file_loader{nullptr};
 
@@ -64,12 +71,12 @@ void LooseFileLoader::on_config_save(utility::Config& cfg) {
 }
 
 void LooseFileLoader::on_draw_ui() {
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
     if (m_attempted_hook && !m_hook_success) {
-        ImGui::TextWrapped("Failed to hook successfully. This mod will not work.");
+        ImGui::TextWrapped(l10n::tr("Failed to hook successfully. This mod will not work."));
         return;
     }
 
@@ -81,16 +88,16 @@ void LooseFileLoader::on_draw_ui() {
         m_uncached_hits = 0;
     };
 
-    if (m_enabled->draw("Enable Loose File Loader")) {
+    if (m_enabled->draw(l10n::tr("Enable Loose File Loader"))) {
         clear_existence_cache();
         g_framework->request_save_config();
     }
 
     if (m_hook_success) {
-        ImGui::TextWrapped("Files encountered: %d", m_files_encountered);
-        ImGui::TextWrapped("Loose files loaded: %d", m_loose_files_loaded);
+        ImGui::TextWrapped(l10n::tr("Files encountered: %d"), m_files_encountered);
+        ImGui::TextWrapped(l10n::tr("Loose files loaded: %d"), m_loose_files_loaded);
 
-        if (ImGui::Button("Clear stats")) {
+        if (ImGui::Button(l10n::tr("Clear stats"))) {
             m_files_encountered = 0;
             m_loose_files_loaded = 0;
 
@@ -101,48 +108,48 @@ void LooseFileLoader::on_draw_ui() {
             m_all_loose_files.clear();
         }
 
-        if (ImGui::TreeNode("Debug")) {
-            ImGui::Checkbox("Enable file cache", &m_enable_file_cache);
-            ImGui::TextWrapped("Cache hits: %d", m_cache_hits);
-            ImGui::TextWrapped("Uncached hits: %d", m_uncached_hits);
+        if (ImGui::TreeNode(l10n::tr("Debug"))) {
+            ImGui::Checkbox(l10n::tr("Enable file cache"), &m_enable_file_cache);
+            ImGui::TextWrapped(l10n::tr("Cache hits: %d"), m_cache_hits);
+            ImGui::TextWrapped(l10n::tr("Uncached hits: %d"), m_uncached_hits);
 
-            if (ImGui::Button("Clear existence cache")) {
+            if (ImGui::Button(l10n::tr("Clear existence cache"))) {
                 clear_existence_cache();
             }
 
             ImGui::TreePop();
         }
 
-        m_log_accessed_files->draw("Log accessed files");
+        m_log_accessed_files->draw(l10n::tr("Log accessed files"));
         if (ImGui::IsItemHovered()) {
             ImGui::BeginTooltip();
-            ImGui::Text("Logs all accessed files to <game_dir>/reframework_accessed_files.txt");
+            ImGui::Text(l10n::tr("Logs all accessed files to <game_dir>/reframework_accessed_files.txt"));
             ImGui::EndTooltip();
         }
 
-        m_log_loose_files->draw("Log loose files");
+        m_log_loose_files->draw(l10n::tr("Log loose files"));
         if (ImGui::IsItemHovered()) {
             ImGui::BeginTooltip();
-            ImGui::Text("Logs loaded loose files to <game_dir>/reframework_loose_files.txt");
+            ImGui::Text(l10n::tr("Logs loaded loose files to <game_dir>/reframework_loose_files.txt"));
             ImGui::EndTooltip();
         }
 
-        ImGui::Checkbox("Show recent files", &m_show_recent_files);
+        ImGui::Checkbox(l10n::tr("Show recent files"), &m_show_recent_files);
 
         if (m_show_recent_files) {
             std::shared_lock _{m_mutex};
 
-            if (ImGui::TreeNode("Recent accessed files")) {
+            if (ImGui::TreeNode(l10n::tr("Recent accessed files"))) {
                 for (const auto& file : m_recent_accessed_files) {
-                    ImGui::TextWrapped("%s", utility::narrow(file).c_str());
+                    ImGui::TextWrapped(l10n::tr("%s"), utility::narrow(file).c_str());
                 }
 
                 ImGui::TreePop();
             }
 
-            if (ImGui::TreeNode("Recent loose files")) {
+            if (ImGui::TreeNode(l10n::tr("Recent loose files"))) {
                 for (const auto& file : m_recent_loose_files) {
-                    ImGui::TextWrapped("%s", utility::narrow(file).c_str());
+                    ImGui::TextWrapped(l10n::tr("%s"), utility::narrow(file).c_str());
                 }
 
                 ImGui::TreePop();

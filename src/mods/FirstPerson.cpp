@@ -1,19 +1,32 @@
 #include <unordered_set>
+#include "../Localization.hpp"   // [CN patch]
 
 #include <spdlog/spdlog.h>
+#include "../Localization.hpp"   // [CN patch]
 #include <imgui.h>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "utility/Scan.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "REFramework.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/REMath.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/MurmurHash.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/Application.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include <sdk/REGameObject.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/CameraSystemDispatch.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include "VR.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "FirstPerson.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 
 FirstPerson* g_first_person = nullptr;
@@ -87,7 +100,7 @@ void FirstPerson::on_frame() {
 void FirstPerson::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_FirstUseEver);
 
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
@@ -101,7 +114,7 @@ void FirstPerson::on_draw_ui() {
         ImGui::DragFloat4("##", (float*)&elem, 1.0f, -1.0f, 1.0f);
     }*/
 
-    if (m_enabled->draw("Enabled")) {
+    if (m_enabled->draw(l10n::tr("Enabled"))) {
         // Disable fov and camera light changes
         m_wants_disable = !m_enabled->value();
     }
@@ -109,19 +122,19 @@ void FirstPerson::on_draw_ui() {
     ImGui::SameLine();
 
     // Revert the updateCamera value to normal
-    if (m_show_in_cutscenes->draw("Show In Cutscenes") && m_camera_system != nullptr && CAMSYS(m_camera_system, mainCameraController) != nullptr) {
+    if (m_show_in_cutscenes->draw(l10n::tr("Show In Cutscenes")) && m_camera_system != nullptr && CAMSYS(m_camera_system, mainCameraController) != nullptr) {
         CAMSYS(m_camera_system, mainCameraController)->updateCamera = true;
     }
 
     ImGui::Separator();
-    ImGui::Text("VR Specific Settings");
+    ImGui::Text(l10n::tr("VR Specific Settings"));
 
-    m_smooth_xz_movement->draw("Smooth XZ Movement (VR)");
-    m_smooth_y_movement->draw("Smooth Y Movement (VR)");
-    m_roomscale->draw("Roomscale Movement (VR)");
+    m_smooth_xz_movement->draw(l10n::tr("Smooth XZ Movement (VR)"));
+    m_smooth_y_movement->draw(l10n::tr("Smooth Y Movement (VR)"));
+    m_roomscale->draw(l10n::tr("Roomscale Movement (VR)"));
 
     static bool adjust_hand_offset{false};
-    ImGui::Checkbox("Adjust Hand Offset", &adjust_hand_offset);
+    ImGui::Checkbox(l10n::tr("Adjust Hand Offset"), &adjust_hand_offset);
 
     if (adjust_hand_offset) {
         auto& vr = VR::get();
@@ -173,57 +186,57 @@ void FirstPerson::on_draw_ui() {
         }
     }
 
-    ImGui::DragFloat4("Scale Debug", (float*)&m_scale_debug.x, 1.0f, -1.0f, 1.0f);
-    ImGui::DragFloat4("Scale Debug 2", (float*)&m_scale_debug2.x, 1.0f, -1.0f, 1.0f);
-    ImGui::DragFloat4("Offset Debug", (float*)&m_offset_debug.x, 1.0f, -1.0f, 1.0f);
-    ImGui::DragFloat("VR Scale", (float*)&m_vr_scale, 0.01f, 0.01f, 1.0f);
+    ImGui::DragFloat4(l10n::tr("Scale Debug"), (float*)&m_scale_debug.x, 1.0f, -1.0f, 1.0f);
+    ImGui::DragFloat4(l10n::tr("Scale Debug 2"), (float*)&m_scale_debug2.x, 1.0f, -1.0f, 1.0f);
+    ImGui::DragFloat4(l10n::tr("Offset Debug"), (float*)&m_offset_debug.x, 1.0f, -1.0f, 1.0f);
+    ImGui::DragFloat(l10n::tr("VR Scale"), (float*)&m_vr_scale, 0.01f, 0.01f, 1.0f);
 
-    ImGui::DragFloat3("Controller rotation (Left)", (float*)&m_left_hand_rotation_offset, 0.1f, -360.0f, 360.0f);
-    ImGui::DragFloat3("Controller rotation (Right)", (float*)&m_right_hand_rotation_offset, 0.1f, -360.0f, 360.0f);
-    ImGui::DragFloat3("Controller position (Left)", (float*)&m_left_hand_position_offset, 0.01f, -2.0f, 2.0f);
-    ImGui::DragFloat3("Controller position (Right)", (float*)&m_right_hand_position_offset, 0.01f, -2.0f, 2.0f);
+    ImGui::DragFloat3(l10n::tr("Controller rotation (Left)"), (float*)&m_left_hand_rotation_offset, 0.1f, -360.0f, 360.0f);
+    ImGui::DragFloat3(l10n::tr("Controller rotation (Right)"), (float*)&m_right_hand_rotation_offset, 0.1f, -360.0f, 360.0f);
+    ImGui::DragFloat3(l10n::tr("Controller position (Left)"), (float*)&m_left_hand_position_offset, 0.01f, -2.0f, 2.0f);
+    ImGui::DragFloat3(l10n::tr("Controller position (Right)"), (float*)&m_right_hand_position_offset, 0.01f, -2.0f, 2.0f);
 
-    ImGui::DragFloat3("Controller 1", (float*)&m_last_controller_euler[0].x, 1.0f, -360.0f, 360.0f);
-    ImGui::DragFloat3("Controller 2", (float*)&m_last_controller_euler[1].x, 1.0f, -360.0f, 360.0f);
+    ImGui::DragFloat3(l10n::tr("Controller 1"), (float*)&m_last_controller_euler[0].x, 1.0f, -360.0f, 360.0f);
+    ImGui::DragFloat3(l10n::tr("Controller 2"), (float*)&m_last_controller_euler[1].x, 1.0f, -360.0f, 360.0f);
 
     ImGui::Separator();
-    ImGui::Text("General Settings");
+    ImGui::Text(l10n::tr("General Settings"));
 
-    m_disable_light_source->draw("Disable Camera Light");
-    m_hide_mesh->draw("Hide Joint Mesh");
+    m_disable_light_source->draw(l10n::tr("Disable Camera Light"));
+    m_hide_mesh->draw(l10n::tr("Hide Joint Mesh"));
 
     ImGui::SameLine();
-    m_rotate_mesh->draw("Force Rotate Joint");
-    m_rotate_body->draw("Rotate Body");
+    m_rotate_mesh->draw(l10n::tr("Force Rotate Joint"));
+    m_rotate_body->draw(l10n::tr("Rotate Body"));
 
-    if (m_disable_vignette->draw("Disable Vignette") && m_disable_vignette->value() == false) {
+    if (m_disable_vignette->draw(l10n::tr("Disable Vignette")) && m_disable_vignette->value() == false) {
         set_vignette(via::render::ToneMapping::Vignetting::KerarePlus);
     }
 
-    m_toggle_key->draw("Change Toggle Key");
+    m_toggle_key->draw(l10n::tr("Change Toggle Key"));
 
-    ImGui::SliderFloat3("CameraOffset", (float*)&m_attach_offsets[m_player_name], -2.0f, 2.0f, "%.3f", 1.0f);
+    ImGui::SliderFloat3(l10n::tr("CameraOffset"), (float*)&m_attach_offsets[m_player_name], -2.0f, 2.0f, "%.3f", 1.0f);
 
-    m_camera_scale->draw("CameraSpeed");
-    m_bone_scale->draw("CameraShake");
+    m_camera_scale->draw(l10n::tr("CameraSpeed"));
+    m_bone_scale->draw(l10n::tr("CameraShake"));
 
     if (m_camera_system != nullptr) {
-        if (m_fov_offset->draw("FOVOffset")) {
+        if (m_fov_offset->draw(l10n::tr("FOVOffset"))) {
             update_fov(CAMSYS(m_camera_system, cameraController));
         }
 
-        if (m_fov_mult->draw("FOVMultiplier")) {
+        if (m_fov_mult->draw(l10n::tr("FOVMultiplier"))) {
             update_fov(CAMSYS(m_camera_system, cameraController));
             m_last_fov_mult = m_fov_mult->value();
         }
 
         m_current_fov->value() = CAMSYS(m_camera_system, cameraController)->activeCamera->fov;
-        m_current_fov->draw("CurrentFOV");
+        m_current_fov->draw(l10n::tr("CurrentFOV"));
     }
 
-    m_body_rotate_speed->draw("BodyRotateSpeed");
+    m_body_rotate_speed->draw(l10n::tr("BodyRotateSpeed"));
 
-    if (ImGui::InputText("Joint", m_attach_bone_imgui.data(), 256)) {
+    if (ImGui::InputText(l10n::tr("Joint"), m_attach_bone_imgui.data(), 256)) {
         m_attach_bone = std::wstring{ std::begin(m_attach_bone_imgui), std::end(m_attach_bone_imgui) };
     }
 
@@ -231,7 +244,7 @@ void FirstPerson::on_draw_ui() {
         return g_first_person->list_box_handler_attach(data, idx, out_text);
     };
 
-    if (ImGui::ListBox("Joints", &m_attach_selected, list_box_handler, &m_attach_names, (int32_t)m_attach_names.size())) {
+    if (ImGui::ListBox(l10n::tr("Joints"), &m_attach_selected, list_box_handler, &m_attach_names, (int32_t)m_attach_names.size())) {
         m_attach_bone_imgui = m_attach_names[m_attach_selected];
         m_attach_bone = std::wstring{ std::begin(m_attach_names[m_attach_selected]), std::end(m_attach_names[m_attach_selected]) };
     }

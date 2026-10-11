@@ -1,70 +1,115 @@
 #define NOMINMAX
 
 #include <fstream>
+#include "../Localization.hpp"   // [CN patch]
 #include <imgui.h>
+#include "../Localization.hpp"   // [CN patch]
 #include <imgui_internal.h>
+#include "../Localization.hpp"   // [CN patch]
 #include <glm/gtx/transform.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #include <sdk/TDBVer.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <reframework/API.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #ifdef REFRAMEWORK_UNIVERSAL
 #include "sdk/regenny/re9/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re9/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/ViaDispatch.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #else
 #if TDB_VER >= 83
 #include "sdk/regenny/re9/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re9/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER <= 49
 #include "sdk/regenny/re7/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re7/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER < 69
 #include "sdk/regenny/re3/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re3/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER == 69
 #include "sdk/regenny/re8/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re8/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER == 70
 #include "sdk/regenny/re2_tdb70/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re2_tdb70/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif TDB_VER >= 71
 #ifdef SF6
 #include "sdk/regenny/sf6/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/sf6/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif defined(RE4)
 #include "sdk/regenny/re4/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re4/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #elif defined(DD2) || TDB_VER >= 74
 #include "sdk/regenny/dd2/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/dd2/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #else
 #include "sdk/regenny/mhrise_tdb71/via/Window.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/mhrise_tdb71/via/SceneView.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #endif
 #endif
 #endif
 
 #include "sdk/Math.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/SceneManager.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/RETypeDB.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/Renderer.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/Application.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/Renderer.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/REMath.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/REGameObject.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "utility/Scan.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/FunctionHook.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/Module.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/Memory.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/Registry.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/ScopeGuard.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "FirstPerson.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "ManualFlashlight.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "VR.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 bool inside_on_end = false;
 uint32_t actual_frame_count = 0;
@@ -3688,7 +3733,7 @@ void VR::on_draw_ui() {
         }
     }
 
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
@@ -3698,12 +3743,12 @@ void VR::on_draw_ui() {
         }
 
         if (runtime->error && runtime->dll_missing) {
-            ImGui::TextWrapped("%s not loaded: %s not found", runtime->name().data(), dll_name.data());
-            ImGui::TextWrapped("Please drop the %s file into the game's directory if you want to use %s", dll_name.data(), runtime->name().data());
+            ImGui::TextWrapped(l10n::tr("%s not loaded: %s not found"), runtime->name().data(), dll_name.data());
+            ImGui::TextWrapped(l10n::tr("Please drop the %s file into the game's directory if you want to use %s"), dll_name.data(), runtime->name().data());
         } else if (runtime->error) {
-            ImGui::TextWrapped("%s not loaded: %s", runtime->name().data(), runtime->error->c_str());
+            ImGui::TextWrapped(l10n::tr("%s not loaded: %s"), runtime->name().data(), runtime->error->c_str());
         } else {
-            ImGui::TextWrapped("%s not loaded: Unknown error", runtime->name().data());
+            ImGui::TextWrapped(l10n::tr("%s not loaded: Unknown error"), runtime->name().data());
         }
 
         ImGui::Separator();
@@ -3713,127 +3758,127 @@ void VR::on_draw_ui() {
     display_error(m_openvr, "openvr_api.dll");
 
     if (!get_runtime()->loaded) {
-        ImGui::TextWrapped("No runtime loaded.");
+        ImGui::TextWrapped(l10n::tr("No runtime loaded."));
         return;
     }
 
-    ImGui::TextWrapped("Hardware scheduling: %s", m_has_hw_scheduling ? "Enabled" : "Disabled");
+    ImGui::TextWrapped(l10n::tr("Hardware scheduling: %s"), m_has_hw_scheduling ? "Enabled" : "Disabled");
 
     if (m_has_hw_scheduling) {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-        ImGui::TextWrapped("WARNING: Hardware-accelerated GPU scheduling is enabled. This will cause the game to run slower.");
-        ImGui::TextWrapped("Go into your Windows Graphics settings and disable \"Hardware-accelerated GPU scheduling\"");
+        ImGui::TextWrapped(l10n::tr("WARNING: Hardware-accelerated GPU scheduling is enabled. This will cause the game to run slower."));
+        ImGui::TextWrapped(l10n::tr("Go into your Windows Graphics settings and disable \"Hardware-accelerated GPU scheduling\""));
         ImGui::PopStyleColor();
     }
 
     ImGui::Separator();
 
-    ImGui::TextWrapped("VR Runtime: %s", get_runtime()->name().data());
-    ImGui::TextWrapped("Render Resolution: %d x %d", get_runtime()->get_width(), get_runtime()->get_height());
+    ImGui::TextWrapped(l10n::tr("VR Runtime: %s"), get_runtime()->name().data());
+    ImGui::TextWrapped(l10n::tr("Render Resolution: %d x %d"), get_runtime()->get_width(), get_runtime()->get_height());
 
     if (get_runtime()->is_openvr()) {
-        ImGui::TextWrapped("Resolution can be changed in SteamVR");
+        ImGui::TextWrapped(l10n::tr("Resolution can be changed in SteamVR"));
     } else if (get_runtime()->is_openxr()) {
-        if (ImGui::TreeNode("Bindings")) {
+        if (ImGui::TreeNode(l10n::tr("Bindings"))) {
             m_openxr->display_bindings_editor();
             ImGui::TreePop();
         }
 
-        if (m_resolution_scale->draw("Resolution Scale")) {
+        if (m_resolution_scale->draw(l10n::tr("Resolution Scale"))) {
             m_openxr->resolution_scale = m_resolution_scale->value();
         }
     }
     
-    ImGui::Combo("Sync Mode", (int*)&get_runtime()->custom_stage, "Early\0Late\0Very Late\0");
+    ImGui::Combo(l10n::tr("Sync Mode"), (int*)&get_runtime()->custom_stage, "Early\0Late\0Very Late\0");
     ImGui::Separator();
 
-    if (ImGui::Button("Set Standing Height")) {
+    if (ImGui::Button(l10n::tr("Set Standing Height"))) {
         m_standing_origin.y = get_position(0).y;
     }
 
-    if (ImGui::Button("Set Standing Origin") || m_set_standing_key->is_key_down_once()) {
+    if (ImGui::Button(l10n::tr("Set Standing Origin")) || m_set_standing_key->is_key_down_once()) {
         m_standing_origin = get_position(0);
     }
 
-    if (ImGui::Button("Recenter View") || m_recenter_view_key->is_key_down_once()) {
+    if (ImGui::Button(l10n::tr("Recenter View")) || m_recenter_view_key->is_key_down_once()) {
         recenter_view();
     }
 
-    if (ImGui::Button("Reinitialize Runtime")) {
+    if (ImGui::Button(l10n::tr("Reinitialize Runtime"))) {
         get_runtime()->wants_reinitialize = true;
     }
 
-    //ImGui::DragFloat4("Right Bounds", (float*)&m_right_bounds, 0.005f, -2.0f, 2.0f);
-    //ImGui::DragFloat4("Left Bounds", (float*)&m_left_bounds, 0.005f, -2.0f, 2.0f);
+    //ImGui::DragFloat4(l10n::tr("Right Bounds"), (float*)&m_right_bounds, 0.005f, -2.0f, 2.0f);
+    //ImGui::DragFloat4(l10n::tr("Left Bounds"), (float*)&m_left_bounds, 0.005f, -2.0f, 2.0f);
 
     ImGui::Separator();
 
-    m_set_standing_key->draw("Set Standing Origin Key");
-    m_recenter_view_key->draw("Recenter View Key");
+    m_set_standing_key->draw(l10n::tr("Set Standing Origin Key"));
+    m_recenter_view_key->draw(l10n::tr("Recenter View Key"));
 
     ImGui::Separator();
 
-    m_use_afr->draw("Use AFR");
-    m_decoupled_pitch->draw("Decoupled Camera Pitch");
+    m_use_afr->draw(l10n::tr("Use AFR"));
+    m_decoupled_pitch->draw(l10n::tr("Decoupled Camera Pitch"));
 
-    if (ImGui::Checkbox("Positional Tracking", &m_positional_tracking)) {
+    if (ImGui::Checkbox(l10n::tr("Positional Tracking"), &m_positional_tracking)) {
     }
 
-    m_hmd_oriented_audio->draw("Head Oriented Audio");
-    m_use_custom_view_distance->draw("Use Custom View Distance");
-    m_view_distance->draw("View Distance/FarZ");
-    m_motion_controls_inactivity_timer->draw("Inactivity Timer");
-    m_joystick_deadzone->draw("Joystick Deadzone");
+    m_hmd_oriented_audio->draw(l10n::tr("Head Oriented Audio"));
+    m_use_custom_view_distance->draw(l10n::tr("Use Custom View Distance"));
+    m_view_distance->draw(l10n::tr("View Distance/FarZ"));
+    m_motion_controls_inactivity_timer->draw(l10n::tr("Inactivity Timer"));
+    m_joystick_deadzone->draw(l10n::tr("Joystick Deadzone"));
 
-    m_ui_scale_option->draw("2D UI Scale");
-    m_ui_distance_option->draw("2D UI Distance");
-    m_world_ui_scale_option->draw("World-Space UI Scale");
+    m_ui_scale_option->draw(l10n::tr("2D UI Scale"));
+    m_ui_distance_option->draw(l10n::tr("2D UI Distance"));
+    m_world_ui_scale_option->draw(l10n::tr("World-Space UI Scale"));
 
-    ImGui::DragFloat3("Overlay Rotation", (float*)&m_overlay_rotation, 0.01f, -360.0f, 360.0f);
-    ImGui::DragFloat3("Overlay Position", (float*)&m_overlay_position, 0.01f, -100.0f, 100.0f);
+    ImGui::DragFloat3(l10n::tr("Overlay Rotation"), (float*)&m_overlay_rotation, 0.01f, -360.0f, 360.0f);
+    ImGui::DragFloat3(l10n::tr("Overlay Position"), (float*)&m_overlay_position, 0.01f, -100.0f, 100.0f);
 
     ImGui::Separator();
-    ImGui::Text("Graphical Options");
+    ImGui::Text(l10n::tr("Graphical Options"));
 
-    m_force_fps_settings->draw("Force Uncap FPS");
-    m_force_aa_settings->draw("Force Disable TAA");
-    m_force_motionblur_settings->draw("Force Disable Motion Blur");
-    m_force_vsync_settings->draw("Force Disable V-Sync");
-    m_force_lensdistortion_settings->draw("Force Disable Lens Distortion");
-    m_force_volumetrics_settings->draw("Force Disable Volumetrics");
-    m_force_lensflares_settings->draw("Force Disable Lens Flares");
-    m_force_dynamic_shadows_settings->draw("Force Enable Dynamic Shadows");
-    m_allow_engine_overlays->draw("Allow Engine Overlays");
-    m_enable_asynchronous_rendering->draw("Enable Asynchronous Rendering");
+    m_force_fps_settings->draw(l10n::tr("Force Uncap FPS"));
+    m_force_aa_settings->draw(l10n::tr("Force Disable TAA"));
+    m_force_motionblur_settings->draw(l10n::tr("Force Disable Motion Blur"));
+    m_force_vsync_settings->draw(l10n::tr("Force Disable V-Sync"));
+    m_force_lensdistortion_settings->draw(l10n::tr("Force Disable Lens Distortion"));
+    m_force_volumetrics_settings->draw(l10n::tr("Force Disable Volumetrics"));
+    m_force_lensflares_settings->draw(l10n::tr("Force Disable Lens Flares"));
+    m_force_dynamic_shadows_settings->draw(l10n::tr("Force Enable Dynamic Shadows"));
+    m_allow_engine_overlays->draw(l10n::tr("Allow Engine Overlays"));
+    m_enable_asynchronous_rendering->draw(l10n::tr("Enable Asynchronous Rendering"));
 
-    if (ImGui::TreeNode("Desktop Recording Fix")) {
+    if (ImGui::TreeNode(l10n::tr("Desktop Recording Fix"))) {
         ImGui::PushID("Desktop");
-        m_desktop_fix->draw("Enabled");
-        m_desktop_fix_skip_present->draw("Skip Present");
+        m_desktop_fix->draw(l10n::tr("Enabled"));
+        m_desktop_fix_skip_present->draw(l10n::tr("Skip Present"));
         ImGui::PopID();
         ImGui::TreePop();
     }
 
     ImGui::Separator();
-    ImGui::Text("Debug info");
-    ImGui::Checkbox("Disable Projection Matrix Override", &m_disable_projection_matrix_override);
-    ImGui::Checkbox("Disable GUI Projection Matrix Override", &m_disable_gui_camera_projection_matrix_override);
-    ImGui::Checkbox("Disable View Matrix Override", &m_disable_view_matrix_override);
-    ImGui::Checkbox("Disable Backbuffer Size Override", &m_disable_backbuffer_size_override);
-    ImGui::Checkbox("Disable Temporal Fix", &m_disable_temporal_fix);
-    ImGui::Checkbox("Disable Post Effect Fix", &m_disable_post_effect_fix);
+    ImGui::Text(l10n::tr("Debug info"));
+    ImGui::Checkbox(l10n::tr("Disable Projection Matrix Override"), &m_disable_projection_matrix_override);
+    ImGui::Checkbox(l10n::tr("Disable GUI Projection Matrix Override"), &m_disable_gui_camera_projection_matrix_override);
+    ImGui::Checkbox(l10n::tr("Disable View Matrix Override"), &m_disable_view_matrix_override);
+    ImGui::Checkbox(l10n::tr("Disable Backbuffer Size Override"), &m_disable_backbuffer_size_override);
+    ImGui::Checkbox(l10n::tr("Disable Temporal Fix"), &m_disable_temporal_fix);
+    ImGui::Checkbox(l10n::tr("Disable Post Effect Fix"), &m_disable_post_effect_fix);
     
     const double min_ = 0.0;
     const double max_ = 25.0;
-    ImGui::SliderScalar("Prediction Scale", ImGuiDataType_Double, &m_openxr->prediction_scale, &min_, &max_);
+    ImGui::SliderScalar(l10n::tr("Prediction Scale"), ImGuiDataType_Double, &m_openxr->prediction_scale, &min_, &max_);
 
-    ImGui::DragFloat4("Raw Left", (float*)&m_raw_projections[0], 0.01f, -100.0f, 100.0f);
-    ImGui::DragFloat4("Raw Right", (float*)&m_raw_projections[1], 0.01f, -100.0f, 100.0f);
+    ImGui::DragFloat4(l10n::tr("Raw Left"), (float*)&m_raw_projections[0], 0.01f, -100.0f, 100.0f);
+    ImGui::DragFloat4(l10n::tr("Raw Right"), (float*)&m_raw_projections[1], 0.01f, -100.0f, 100.0f);
 
     // convert m_avg_input_delay (std::chrono::nanoseconds) to milliseconds (float)
     auto duration_float = std::chrono::duration<float, std::milli>(m_avg_input_delay).count();
 
-    ImGui::DragFloat("Avg Input Processing Delay (MS)", &duration_float, 0.00001f);
+    ImGui::DragFloat(l10n::tr("Avg Input Processing Delay (MS)"), &duration_float, 0.00001f);
 }
 
 void VR::on_device_reset() {

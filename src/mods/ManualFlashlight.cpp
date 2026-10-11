@@ -1,7 +1,10 @@
 #include "REFramework.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "ManualFlashlight.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 using namespace utility;
 
@@ -24,20 +27,20 @@ void ManualFlashlight::on_frame() {
 
 void ManualFlashlight::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_FirstUseEver);
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
-    if (m_enabled->draw("Enabled") && !m_enabled->value()) {
+    if (m_enabled->draw(l10n::tr("Enabled")) && !m_enabled->value()) {
         on_disabled();
     }
 
-    m_key->draw("Change Key");
+    m_key->draw(l10n::tr("Change Key"));
 
     if (sdk::GameIdentity::get().is_re8()) {
-        m_light_ignore_power_on_zones->draw("Ignore Light Power On Zones");
+        m_light_ignore_power_on_zones->draw(l10n::tr("Ignore Light Power On Zones"));
 
-        ImGui::Text("Light power on zones: %i\n", m_light_power_on_zones);
+        ImGui::Text(l10n::tr("Light power on zones: %i\n"), m_light_power_on_zones);
     }
 }
 

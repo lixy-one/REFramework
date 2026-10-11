@@ -1,31 +1,52 @@
 #include <unordered_map>
+#include "../Localization.hpp"   // [CN patch]
 #include <cwchar>
+#include "../Localization.hpp"   // [CN patch]
 #include <algorithm>
+#include "../Localization.hpp"   // [CN patch]
 #include <unordered_set>
+#include "../Localization.hpp"   // [CN patch]
 #include <shared_mutex>
+#include "../Localization.hpp"   // [CN patch]
 #include <iomanip>
+#include "../Localization.hpp"   // [CN patch]
 #include <regex>
+#include "../Localization.hpp"   // [CN patch]
 #include <fstream>
+#include "../Localization.hpp"   // [CN patch]
 #include <immintrin.h>
+#include "../Localization.hpp"   // [CN patch]
 
 #include <asmjit/asmjit.h>
+#include "../Localization.hpp"   // [CN patch]
 #include <asmjit/x86/x86assembler.h>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "utility/Module.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/Scan.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/Emulation.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include <bdshemu.h>
+#include "../Localization.hpp"   // [CN patch]
 
 // Windows.h arrives via the utility headers above; TlHelp32 requires it to come first.
 #include <TlHelp32.h>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "sdk/RETypeDB.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "Hooks.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "IntegrityCheckBypass.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "DisasmUtils.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 struct IntegrityCheckPattern {
     std::string pat{};
@@ -2806,24 +2827,24 @@ void IntegrityCheckBypass::on_draw_ui() {
     if (sdk::GameIdentity::get().tdb_ver() < 81) {
         return;
     }
-    if (!ImGui::CollapsingHeader("PAK Directory Loading")) {
+    if (!ImGui::CollapsingHeader(l10n::tr("PAK Directory Loading"))) {
         return;
     }
 
-    ImGui::Text("Allow loading PAKs inside %s directory. PAKs can be of any filename and ends with .pak (case-sensitive)", IntegrityCheckBypass::CUSTOM_PAK_DIRECTORY_PATH);
-    ImGui::Text("Restart the game to apply changes.");
+    ImGui::Text(l10n::tr("Allow loading PAKs inside %s directory. PAKs can be of any filename and ends with .pak (case-sensitive)"), IntegrityCheckBypass::CUSTOM_PAK_DIRECTORY_PATH);
+    ImGui::Text(l10n::tr("Restart the game to apply changes."));
 
     auto changed = false;
-    changed |= m_load_pak_directory->draw("Enable");
+    changed |= m_load_pak_directory->draw(l10n::tr("Enable"));
 
     if (changed) {
         g_framework->request_save_config();
     }
 
-    if (ImGui::TreeNode("List of custom PAKs loaded:")) {
+    if (ImGui::TreeNode(l10n::tr("List of custom PAKs loaded:"))) {
         for (const auto& pak_path : m_custom_pak_in_directory_paths) {
             auto pak_utf8 = utility::narrow(pak_path);
-            ImGui::BulletText("%s", pak_utf8.c_str());
+            ImGui::BulletText(l10n::tr("%s"), pak_utf8.c_str());
         }
         ImGui::TreePop();
     }

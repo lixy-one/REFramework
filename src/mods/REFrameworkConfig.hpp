@@ -61,7 +61,12 @@ private:
     std::vector<std::string> fonts{};
     ModComboString::Ptr m_font_file{};
 
+    // [CN patch] 界面语言切换（English / 简体中文），存到 re2_fw_config.txt
+    ModComboString::Ptr m_language{ ModComboString::create(generate_name("Language"),
+        { "简体中文", "English" }, "简体中文") };
+
     ValueList m_options {
+        *m_language,
         *m_menu_key,
         *m_menu_open,
         *m_remember_menu_state,

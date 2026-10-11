@@ -1,27 +1,43 @@
 #include <optional>
+#include "../../Localization.hpp"   // [CN patch]
 #include <tuple>
+#include "../../Localization.hpp"   // [CN patch]
 
 #include <DirectxColors.h>
+#include "../../Localization.hpp"   // [CN patch]
 
 #include <imgui.h>
+#include "../../Localization.hpp"   // [CN patch]
 #include <ImGuizmo.h>
+#include "../../Localization.hpp"   // [CN patch]
 
 #include "REFramework.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "utility/ImGui.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/SceneManager.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/RETypeDB.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/REManagedObject.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/Renderer.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/REGameObject.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../../Localization.hpp"   // [CN patch]
 
 // Chain struct includes. CollisionData offset differs:
 //   TDB < 71 (RE2/RE3/DMC5): 0x58
 //   TDB >= 71 (MHRise/SF6/DD2/etc): 0x60
 // We include both but access CollisionData via runtime offset dispatch.
 #include "sdk/regenny/re2_tdb70/via/motion/Chain.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re2_tdb70/via/motion/ChainCollisionTop.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/regenny/re2_tdb70/via/motion/ChainCollisions.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 
 namespace {
     inline bool is_legacy_chain() { return sdk::GameIdentity::get().tdb_ver() < 69; }
@@ -84,8 +100,11 @@ namespace {
 }
 
 #include "../BackBufferRenderer.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "ObjectExplorer.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "ChainViewer.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 
 std::optional<std::string> ChainViewer::on_initialize() {
     // OK
@@ -156,15 +175,15 @@ void ChainViewer::on_config_save(utility::Config& cfg) {
 void ChainViewer::on_draw_dev_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_Once);
 
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
-    if (m_enabled->draw("Enabled") && !m_enabled->value()) {
+    if (m_enabled->draw(l10n::tr("Enabled")) && !m_enabled->value()) {
         // todo
     }
 
-    if (ImGui::SliderFloat("Effect Alpha", &m_effect_alpha, 0.0f, 1.0f)) {
+    if (ImGui::SliderFloat(l10n::tr("Effect Alpha"), &m_effect_alpha, 0.0f, 1.0f)) {
         m_effect_dirty = true;
     }
 }
@@ -274,7 +293,7 @@ void ChainViewer::on_frame() {
     IMGUIZMO_NAMESPACE::SetDrawlist(ImGui::GetBackgroundDrawList());
     IMGUIZMO_NAMESPACE::SetRect(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
 
-    ImGui::Begin("Chains");
+    ImGui::Begin(l10n::tr("Chains"));
 
     static auto chain_type = sdk::find_type_definition("via.motion.Chain");
     static auto chain_runtime_type = chain_type->get_runtime_type();
@@ -504,11 +523,11 @@ void ChainViewer::on_frame() {
                                 ImGui::TreePop();
                             }
 
-                            ImGui::DragFloat("Radius", &collider.radius(), 0.01f, 0.0f, 0.0f);
-                            ImGui::DragInt("Flags", (int*)&collider.flags(), 1, 0, 0);
+                            ImGui::DragFloat(l10n::tr("Radius"), &collider.radius(), 0.01f, 0.0f, 0.0f);
+                            ImGui::DragInt(l10n::tr("Flags"), (int*)&collider.flags(), 1, 0, 0);
 
-                            ImGui::DragFloat3("Offset", (float*)&collider.offset(), 0.01f, 0.0f, 0.0f);
-                            ImGui::DragFloat3("Pair Offset", (float*)&collider.pair_offset(), 0.01f, 0.0f, 0.0f);
+                            ImGui::DragFloat3(l10n::tr("Offset"), (float*)&collider.offset(), 0.01f, 0.0f, 0.0f);
+                            ImGui::DragFloat3(l10n::tr("Pair Offset"), (float*)&collider.pair_offset(), 0.01f, 0.0f, 0.0f);
                             ImGui::TreePop();
                         }
 

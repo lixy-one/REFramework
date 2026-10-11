@@ -1,8 +1,12 @@
 #include <sdk/SceneManager.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/RETypeDB.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "Camera.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 using namespace utility;
 
@@ -20,35 +24,35 @@ void Camera::on_config_save(Config& cfg) {
 
 void Camera::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_FirstUseEver);
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
-    ImGui::TextWrapped("Make sure to tick \"Enabled\" for any of the below settings to take effect.");
+    ImGui::TextWrapped(l10n::tr("Make sure to tick \"Enabled\" for any of the below settings to take effect."));
 
-    if (m_enabled->draw("Enabled") && !m_enabled->value()) {
+    if (m_enabled->draw(l10n::tr("Enabled")) && !m_enabled->value()) {
         on_disabled();
     }
 
-    if (m_disable_vignette->draw("Disable Vignette") && !m_disable_vignette->value()) {
+    if (m_disable_vignette->draw(l10n::tr("Disable Vignette")) && !m_disable_vignette->value()) {
         set_vignette_type(via::render::ToneMapping::Vignetting::Enable);
     }
 
     // RE8 and above have vignetting brightness
     if (sdk::GameIdentity::get().tdb_ver() >= 69) {
-        m_vignette_brightness->draw("Vignette Brightness");
+        m_vignette_brightness->draw(l10n::tr("Vignette Brightness"));
     }
 
     if (sdk::GameIdentity::get().is_re8()) {
-        m_fov->draw("RE8 FOV");
-        m_fov_aiming->draw("RE8 Aiming FOV");
+        m_fov->draw(l10n::tr("RE8 FOV"));
+        m_fov_aiming->draw(l10n::tr("RE8 Aiming FOV"));
     }
 
     ImGui::Separator();
-    ImGui::TextWrapped("These below settings are separate and do not require \"Enabled\" to be ticked.");
+    ImGui::TextWrapped(l10n::tr("These below settings are separate and do not require \"Enabled\" to be ticked."));
 
-    m_use_custom_global_fov->draw("Use Custom Global FOV");
-    m_global_fov->draw("Global FOV");
+    m_use_custom_global_fov->draw(l10n::tr("Use Custom Global FOV"));
+    m_global_fov->draw(l10n::tr("Global FOV"));
 }
 
 void Camera::on_update_transform(RETransform* transform) {

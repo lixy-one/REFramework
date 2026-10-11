@@ -1,11 +1,17 @@
 #include <sdk/Application.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/REMath.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/SceneManager.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "HookManager.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "FreeCam.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 using namespace utility;
 
@@ -39,35 +45,35 @@ void FreeCam::on_frame() {
 void FreeCam::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_FirstUseEver);
 
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
-    if (m_enabled->draw("Enabled")) {
+    if (m_enabled->draw(l10n::tr("Enabled"))) {
         m_first_time = true;
     }
 
     ImGui::SameLine();
-    m_lock_camera->draw("Lock Position");
+    m_lock_camera->draw(l10n::tr("Lock Position"));
 
     if (sdk::GameIdentity::get().is_re2() || sdk::GameIdentity::get().is_re3() || sdk::GameIdentity::get().is_re8() || sdk::GameIdentity::get().is_re4()) {
-        m_disable_movement->draw("Disable Character Movement");
+        m_disable_movement->draw(l10n::tr("Disable Character Movement"));
     }
 
-    m_toggle_key->draw("Toggle Key");
-    m_move_up_key->draw("Move camera up Key");
-    m_move_down_key->draw("Move camera down Key");
-    m_lock_camera_key->draw("Lock Position Toggle Key");
+    m_toggle_key->draw(l10n::tr("Toggle Key"));
+    m_move_up_key->draw(l10n::tr("Move camera up Key"));
+    m_move_down_key->draw(l10n::tr("Move camera down Key"));
+    m_lock_camera_key->draw(l10n::tr("Lock Position Toggle Key"));
     if (sdk::GameIdentity::get().is_re2() || sdk::GameIdentity::get().is_re3() || sdk::GameIdentity::get().is_re8() || sdk::GameIdentity::get().is_re4()) {
-        m_disable_movement_key->draw("Disable Movement Toggle Key");
+        m_disable_movement_key->draw(l10n::tr("Disable Movement Toggle Key"));
     }
-    m_speed_modifier_fast_key->draw("Speed modifier Fast key");
-    m_speed_modifier_slow_key->draw("Speed modifier Slow key");
+    m_speed_modifier_fast_key->draw(l10n::tr("Speed modifier Fast key"));
+    m_speed_modifier_slow_key->draw(l10n::tr("Speed modifier Slow key"));
 
-    m_rotation_speed->draw("Rotation Speed");
+    m_rotation_speed->draw(l10n::tr("Rotation Speed"));
 
-    m_speed->draw("Speed");
-    m_speed_modifier->draw("Speed Modifier");
+    m_speed->draw(l10n::tr("Speed"));
+    m_speed_modifier->draw(l10n::tr("Speed Modifier"));
 }
 
 enum class MoveDirection : uint8_t {

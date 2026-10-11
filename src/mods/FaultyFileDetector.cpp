@@ -1,18 +1,30 @@
 #include "FaultyFileDetector.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "IntegrityCheckBypass.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #include <fstream>
+#include "../Localization.hpp"   // [CN patch]
 #include <spdlog/spdlog.h>
+#include "../Localization.hpp"   // [CN patch]
 #include <spdlog/sinks/basic_file_sink.h>
+#include "../Localization.hpp"   // [CN patch]
 #include <utility/String.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <utility/Module.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include <utility/Scan.hpp>
+#include "../Localization.hpp"   // [CN patch]
 
 #include <safetyhook/mid_hook.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include "REFramework.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "DisasmUtils.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 std::shared_ptr<FaultyFileDetector> g_faulty_detector_instance = nullptr;
 
@@ -577,32 +589,32 @@ void FaultyFileDetector::on_frame() {
 void FaultyFileDetector::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_FirstUseEver);
 
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
     if (m_blocking_error.has_value()) {
-        ImGui::TextWrapped("Error: %s", m_blocking_error->c_str());
+        ImGui::TextWrapped(l10n::tr("Error: %s"), m_blocking_error->c_str());
         return;
     }
 
     std::scoped_lock lock{m_mutex};
 
     // Display statistics
-    ImGui::TextWrapped("Total faulty files encountered: %zu", m_faulty_files.size());
+    ImGui::TextWrapped(l10n::tr("Total faulty files encountered: %zu"), m_faulty_files.size());
 
     if (m_faulty_files.empty()) {
-        ImGui::TextWrapped("No faulty files detected!");
+        ImGui::TextWrapped(l10n::tr("No faulty files detected!"));
         return;
     }
 
-    ImGui::TextWrapped("Faulty files detected!");
-    ImGui::TextWrapped("See reframework_faulty_files.txt for full list and details. Use external tool to find out what mod/patch is causing the issue.");
+    ImGui::TextWrapped(l10n::tr("Faulty files detected!"));
+    ImGui::TextWrapped(l10n::tr("See reframework_faulty_files.txt for full list and details. Use external tool to find out what mod/patch is causing the issue."));
 
     bool changed = false;
 
-    changed |= m_enabled->draw("Enable Faulty File Detector");
-    changed |= m_max_recent_files->draw("Max Recent Files to Display");
+    changed |= m_enabled->draw(l10n::tr("Enable Faulty File Detector"));
+    changed |= m_max_recent_files->draw(l10n::tr("Max Recent Files to Display"));
 
     // Define reason display info
     struct ReasonInfo {
@@ -617,7 +629,7 @@ void FaultyFileDetector::on_draw_ui() {
         {FaultyReason::ShouldBeEncrypted, {"Should Be Encrypted", ImVec4(1.0f, 0.0f, 0.0f, 1.0f)}},
     };
 
-    if (ImGui::TreeNode("Show recent##ShowRecentFaultyFiles")) {
+    if (ImGui::TreeNode(l10n::tr("Show recent##ShowRecentFaultyFiles"))) {
         // Display files organized by reason
         for (const auto& [reason, info] : reason_info) {
             auto it = m_recent_faulty_files_by_reason.find(reason);
@@ -636,11 +648,11 @@ void FaultyFileDetector::on_draw_ui() {
             
             if (ImGui::TreeNode(std::format("{} ({})", info.label, files.size()).c_str())) {
                 for (int i = 0; i < count_to_display; ++i) {
-                    ImGui::TextWrapped("%s", utility::narrow(files[i]).c_str());
+                    ImGui::TextWrapped(l10n::tr("%s"), utility::narrow(files[i]).c_str());
                 }
 
                 if (files.size() > (size_t)count_to_display) {
-                    ImGui::TextWrapped("... and %zu more", files.size() - count_to_display);
+                    ImGui::TextWrapped(l10n::tr("... and %zu more"), files.size() - count_to_display);
                 }
 
                 ImGui::TreePop();

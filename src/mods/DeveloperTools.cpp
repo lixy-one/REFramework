@@ -1,8 +1,12 @@
 #include "tools/GameObjectsDisplay.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "tools/ChainViewer.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "tools/ObjectExplorer.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "DeveloperTools.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 DeveloperTools::DeveloperTools() {
     m_tools.emplace_back(std::make_shared<ChainViewer>());
@@ -14,7 +18,7 @@ DeveloperTools::DeveloperTools() {
 }
 
 void DeveloperTools::on_draw_ui() {
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 

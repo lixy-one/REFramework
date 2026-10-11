@@ -1435,6 +1435,8 @@ if(REF_BUILD_FRAMEWORK AND CMAKE_SIZEOF_VOID_P EQUAL 8) # build-framework
 		"src/HookManager.cpp"
 		"src/HookManager.hpp"
 		"src/LicenseStrings.hpp"
+		"src/Localization.cpp"
+		"src/Localization.hpp"
 		"src/Main.cpp"
 		"src/Mod.hpp"
 		"src/Mods.cpp"
@@ -1473,6 +1475,8 @@ if(REF_BUILD_FRAMEWORK AND CMAKE_SIZEOF_VOID_P EQUAL 8) # build-framework
 		"src/mods/LooseFileLoader.hpp"
 		"src/mods/LooseTextureLoader.cpp"
 		"src/mods/LooseTextureLoader.hpp"
+		"src/mods/MCP.cpp"
+		"src/mods/MCP.hpp"
 		"src/mods/ManualFlashlight.cpp"
 		"src/mods/ManualFlashlight.hpp"
 		"src/mods/MethodDatabase.cpp"
@@ -1564,6 +1568,7 @@ if(REF_BUILD_FRAMEWORK AND CMAKE_SIZEOF_VOID_P EQUAL 8) # build-framework
 		"/GS-"
 		"/bigobj"
 		"/EHa"
+		"/utf-8"
 	)
 
 	target_include_directories(REFramework PUBLIC
@@ -1597,6 +1602,7 @@ if(REF_BUILD_FRAMEWORK AND CMAKE_SIZEOF_VOID_P EQUAL 8) # build-framework
 		delayimp
 		DirectXTK
 		DirectXTK12
+		ws2_32
 	)
 
 	set_target_properties(REFramework PROPERTIES

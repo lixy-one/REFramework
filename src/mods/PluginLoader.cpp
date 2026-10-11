@@ -1,22 +1,36 @@
 #include <filesystem>
+#include "../Localization.hpp"   // [CN patch]
 
 #include <imgui.h>
+#include "../Localization.hpp"   // [CN patch]
 #include <spdlog/spdlog.h>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "REFramework.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "reframework/API.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/String.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "utility/Module.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "sdk/ResourceManager.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/Memory.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include <sdk/GameIdentity.hpp>
+#include "../Localization.hpp"   // [CN patch]
 #include "APIProxy.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "ScriptRunner.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "HookManager.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "PluginLoader.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 // In the monolithic build, game_name is set at runtime after GameIdentity::initialize().
 // The g_plugin_version global is updated in PluginLoader's initialization.
@@ -818,32 +832,32 @@ std::optional<std::string> PluginLoader::initialize_plugins() {
 void PluginLoader::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_Once);
 
-    if (ImGui::CollapsingHeader(get_name().data())) {
+    if (ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         std::scoped_lock _{m_mux};
 
         if (!m_plugins.empty()) {
-            ImGui::Text("Loaded plugins:");
+            ImGui::Text(l10n::tr("Loaded plugins:"));
 
             for (auto&& [name, _] : m_plugins) {
                 ImGui::Text(name.c_str());
             }
         } else {
-            ImGui::Text("No plugins loaded.");
+            ImGui::Text(l10n::tr("No plugins loaded."));
         }
 
         if (!m_plugin_load_errors.empty()) {
             ImGui::Spacing();
-            ImGui::Text("Errors:");
+            ImGui::Text(l10n::tr("Errors:"));
             for (auto&& [name, error] : m_plugin_load_errors) {
-                ImGui::Text("%s - %s", name.c_str(), error.c_str());
+                ImGui::Text(l10n::tr("%s - %s"), name.c_str(), error.c_str());
             }
         }
 
         if (!m_plugin_load_warnings.empty()) {
             ImGui::Spacing();
-            ImGui::Text("Warnings:");
+            ImGui::Text(l10n::tr("Warnings:"));
             for (auto&& [name, warning] : m_plugin_load_warnings) {
-                ImGui::Text("%s - %s", name.c_str(), warning.c_str());
+                ImGui::Text(l10n::tr("%s - %s"), name.c_str(), warning.c_str());
             }
         }
     }

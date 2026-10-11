@@ -1,16 +1,24 @@
 #include <sdk/SceneManager.hpp>
+#include "../../../Localization.hpp"   // [CN patch]
 #include <sdk/MurmurHash.hpp>
+#include "../../../Localization.hpp"   // [CN patch]
 #include <sdk/Application.hpp>
+#include "../../../Localization.hpp"   // [CN patch]
 #include <sdk/GameIdentity.hpp>
+#include "../../../Localization.hpp"   // [CN patch]
 
 #include "HookManager.hpp"
+#include "../../../Localization.hpp"   // [CN patch]
 
 // Reminder: THIS MUST BE INCLUDED OR THE LOG FILE WILL BALLOON TO GIGANTIC SIZE
 // AND THE GAME MAY CRASH. THIS IS REQUIRED FOR THE sol_lua_push DECLARATION.
 #include "../../../mods/ScriptRunner.hpp"
+#include "../../../Localization.hpp"   // [CN patch]
 #include "../../../mods/VR.hpp"
+#include "../../../Localization.hpp"   // [CN patch]
 
 #include "RE8VR.hpp"
+#include "../../../Localization.hpp"   // [CN patch]
 
 std::shared_ptr<RE8VR>& RE8VR::get() {
     static auto inst = std::make_shared<RE8VR>();
@@ -115,15 +123,15 @@ void RE8VR::on_lua_state_destroyed(sol::state& lua) {
 void RE8VR::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_FirstUseEver);
 
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
-    m_hide_upper_body->draw("Hide Upper Body");
-    m_hide_lower_body->draw("Hide Lower Body");
-    m_hide_arms->draw("Hide Arms");
-    m_hide_upper_body_cutscenes->draw("Auto Hide Upper Body in Cutscenes");
-    m_hide_lower_body_cutscenes->draw("Auto Hide Lower Body in Cutscenes");
+    m_hide_upper_body->draw(l10n::tr("Hide Upper Body"));
+    m_hide_lower_body->draw(l10n::tr("Hide Lower Body"));
+    m_hide_arms->draw(l10n::tr("Hide Arms"));
+    m_hide_upper_body_cutscenes->draw(l10n::tr("Auto Hide Upper Body in Cutscenes"));
+    m_hide_lower_body_cutscenes->draw(l10n::tr("Auto Hide Lower Body in Cutscenes"));
 }
 
 void RE8VR::on_pre_application_entry(void* entry, const char* name, size_t hash) {

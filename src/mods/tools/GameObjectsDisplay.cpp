@@ -1,19 +1,30 @@
 #include <DirectXColors.h>
+#include "../../Localization.hpp"   // [CN patch]
 #include <../../directxtk12-src/Src/d3dx12.h>
+#include "../../Localization.hpp"   // [CN patch]
 
 
 #include <../../directxtk12-src/Inc/ResourceUploadBatch.h>
+#include "../../Localization.hpp"   // [CN patch]
 
 #include "../spritefonts/Roboto.spritefont.h"
+#include "../../Localization.hpp"   // [CN patch]
 
 #include "REFramework.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/SceneManager.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/RETypeDB.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/REManagedObject.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "sdk/REGameObject.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 
 #include "../BackBufferRenderer.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 #include "GameObjectsDisplay.hpp"
+#include "../../Localization.hpp"   // [CN patch]
 
 std::optional<std::string> GameObjectsDisplay::on_initialize_d3d_thread() {
     return initialize_d3d_resources();
@@ -127,11 +138,11 @@ void GameObjectsDisplay::on_config_save(utility::Config& cfg) {
 void GameObjectsDisplay::on_draw_dev_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_Once);
 
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
-    if (m_enabled->draw("Enabled")) {
+    if (m_enabled->draw(l10n::tr("Enabled"))) {
         if (m_enabled->value()) {
             m_needs_d3d_init = true;
         }
@@ -139,11 +150,11 @@ void GameObjectsDisplay::on_draw_dev_ui() {
 
     ImGui::SameLine();
 
-    ImGui::Checkbox("Legacy Mode", &m_legacy_mode);
+    ImGui::Checkbox(l10n::tr("Legacy Mode"), &m_legacy_mode);
 
-    m_max_distance->draw("Max Distance for GameObjects");
+    m_max_distance->draw(l10n::tr("Max Distance for GameObjects"));
 
-    if (ImGui::SliderFloat("Object Effect Alpha", &m_effect_alpha, 0.0f, 1.0f)) {
+    if (ImGui::SliderFloat(l10n::tr("Object Effect Alpha"), &m_effect_alpha, 0.0f, 1.0f)) {
         m_effect_dirty = true;
     }
 }

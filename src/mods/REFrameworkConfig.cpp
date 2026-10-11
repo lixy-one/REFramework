@@ -1,6 +1,8 @@
 #include "../REFramework.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "REFrameworkConfig.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 std::shared_ptr<REFrameworkConfig>& REFrameworkConfig::get() {
      static std::shared_ptr<REFrameworkConfig> instance{std::make_shared<REFrameworkConfig>()};
@@ -30,11 +32,14 @@ std::optional<std::string> REFrameworkConfig::on_initialize() {
 
     m_options.push_back(*m_font_file);
 
+    // [CN patch] 应用界面语言（默认简体中文）
+    l10n::set_enabled(m_language->value() != "English");
+
     return Mod::on_initialize();
 }
 
 void REFrameworkConfig::on_draw_ui() {
-    if (!ImGui::CollapsingHeader("Configuration")) {
+    if (!ImGui::CollapsingHeader(l10n::tr("Configuration"))) {
         return;
     }
 
@@ -42,17 +47,23 @@ void REFrameworkConfig::on_draw_ui() {
 
     bool changed = false;
 
-    changed |= m_menu_key->draw("Menu Key");
-    changed |= m_show_cursor_key->draw("Show Cursor Key");
-    changed |= m_remember_menu_state->draw("Remember Menu Open/Closed State");
-    changed |= m_always_show_cursor->draw("Draw Cursor With Menu Open");
+    // [CN patch] 语言切换：切完立刻生效（l10n::tr 是运行时查表，下一帧 UI 即变）
+    if (m_language->draw("Language")) {
+        l10n::set_enabled(m_language->value() != "English");
+        changed = true;
+    }
 
-    if (m_font_file->draw("Font")) {
+    changed |= m_menu_key->draw(l10n::tr("Menu Key"));
+    changed |= m_show_cursor_key->draw(l10n::tr("Show Cursor Key"));
+    changed |= m_remember_menu_state->draw(l10n::tr("Remember Menu Open/Closed State"));
+    changed |= m_always_show_cursor->draw(l10n::tr("Draw Cursor With Menu Open"));
+
+    if (m_font_file->draw(l10n::tr("Font"))) {
         g_framework->set_font(m_font_file->value());
         changed = true;
     }
 
-    if (m_font_size->draw("Font Size")) {
+    if (m_font_size->draw(l10n::tr("Font Size"))) {
         g_framework->set_font_size(m_font_size->value());
 
         const auto display_size = g_framework->get_main_window_display_size();
@@ -89,6 +100,10 @@ void REFrameworkConfig::on_config_load(const utility::Config& cfg) {
     }
     
     g_framework->set_font(m_font_file->value());
+
+    // [CN patch] 从配置恢复语言设置
+    l10n::set_enabled(m_language->value() != "English");
+
     const auto saved_font_size = m_ui_font_size->value() > 0.0f
         ? m_ui_font_size->value()
         : static_cast<float>(m_font_size->value());

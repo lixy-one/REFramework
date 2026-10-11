@@ -1,10 +1,15 @@
 #include <optional>
+#include "../Localization.hpp"   // [CN patch]
 
 #include "sdk/ReClass.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/SceneManager.hpp"
+#include "../Localization.hpp"   // [CN patch]
 #include "sdk/Application.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 #include "Scene.hpp"
+#include "../Localization.hpp"   // [CN patch]
 
 std::optional<std::string> SceneMods::on_initialize() {
     return Mod::on_initialize();
@@ -57,22 +62,22 @@ void SceneMods::on_frame() {
 void SceneMods::on_draw_ui() {
     ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_FirstUseEver);
 
-    if (!ImGui::CollapsingHeader(get_name().data())) {
+    if (!ImGui::CollapsingHeader(l10n::tr(get_name().data()))) {
         return;
     }
 
-    m_timescale_toggle_key->draw("Timescale (Toggle) Key");
-    m_timescale_continuous_key->draw("Timescale (Continuous) Key");
+    m_timescale_toggle_key->draw(l10n::tr("Timescale (Toggle) Key"));
+    m_timescale_continuous_key->draw(l10n::tr("Timescale (Continuous) Key"));
 
-    if (m_use_application_timescale->draw("Use Application Timescale")) {
+    if (m_use_application_timescale->draw(l10n::tr("Use Application Timescale"))) {
         sdk::set_timescale(1.0f);
         sdk::Application::set_global_speed(1.0f);
     }
 
-    m_timescale->draw("");
+    m_timescale->draw(l10n::tr(""));
     ImGui::SameLine();
 
-    if (m_set_timescale->draw("Timescale")) {
+    if (m_set_timescale->draw(l10n::tr("Timescale"))) {
         if (!m_set_timescale->value()) {
             sdk::set_timescale(1.0f);
         }

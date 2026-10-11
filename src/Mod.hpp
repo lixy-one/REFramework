@@ -16,6 +16,7 @@
 #include "utility/Config.hpp"
 
 #include "REFramework.hpp"
+#include "Localization.hpp"   // [CN patch] 界面汉化查表
 
 class IModValue {
 public:
@@ -96,14 +97,14 @@ public:
 
     bool draw(std::string_view name) override {
         ImGui::PushID(this);
-        auto ret = ImGui::Checkbox(name.data(), &m_value);
+        auto ret = ImGui::Checkbox(l10n::tr(name.data()), &m_value);
         ImGui::PopID();
 
         return ret;
     }
 
     void draw_value(std::string_view name) override {
-        ImGui::Text("%s: %i", name.data(), m_value);
+        ImGui::Text(l10n::tr("%s: %i"), l10n::tr(name.data()), m_value);
     }
 
     bool toggle() {
@@ -124,14 +125,14 @@ public:
 
     bool draw(std::string_view name) override {
         ImGui::PushID(this);
-        auto ret = ImGui::InputFloat(name.data(), &m_value);
+        auto ret = ImGui::InputFloat(l10n::tr(name.data()), &m_value);
         ImGui::PopID();
 
         return ret;
     }
 
     void draw_value(std::string_view name) override {
-        ImGui::Text("%s: %f", name.data(), m_value);
+        ImGui::Text(l10n::tr("%s: %f"), l10n::tr(name.data()), m_value);
     }
 };
 
@@ -151,14 +152,14 @@ public:
 
     bool draw(std::string_view name) override {
         ImGui::PushID(this);
-        auto ret = ImGui::SliderFloat(name.data(), &m_value, m_range.x, m_range.y);
+        auto ret = ImGui::SliderFloat(l10n::tr(name.data()), &m_value, m_range.x, m_range.y);
         ImGui::PopID();
 
         return ret;
     }
 
     void draw_value(std::string_view name) override {
-        ImGui::Text("%s: %f [%f, %f]", name.data(), m_value, m_range.x, m_range.y);
+        ImGui::Text(l10n::tr("%s: %f [%f, %f]"), l10n::tr(name.data()), m_value, m_range.x, m_range.y);
     }
 
     auto& range() {
@@ -184,14 +185,14 @@ public:
 
     bool draw(std::string_view name) override {
         ImGui::PushID(this);
-        auto ret = ImGui::SliderInt(name.data(), &m_value, 5, 40);
+        auto ret = ImGui::SliderInt(l10n::tr(name.data()), &m_value, 5, 40);
         ImGui::PopID();
 
         return ret;
     }
 
     void draw_value(std::string_view name) override {
-        ImGui::Text("%s: %i", name.data(), m_value);
+        ImGui::Text(l10n::tr("%s: %i"), l10n::tr(name.data()), m_value);
     }
 };
 
@@ -217,7 +218,7 @@ public:
         m_value = std::clamp<int32_t>(m_value, 0, static_cast<int32_t>(m_options.size()) - 1);
 
         ImGui::PushID(this);
-        auto ret = ImGui::Combo(name.data(), &m_value, m_options.data(), static_cast<int32_t>(m_options.size()));
+        auto ret = ImGui::Combo(l10n::tr(name.data()), &m_value, m_options.data(), static_cast<int32_t>(m_options.size()));
         ImGui::PopID();
 
         return ret;
@@ -226,7 +227,7 @@ public:
     void draw_value(std::string_view name) override {
         m_value = std::clamp<int32_t>(m_value, 0, static_cast<int32_t>(m_options.size()) - 1);
 
-        ImGui::Text("%s: %s", name.data(), m_options[m_value]);
+        ImGui::Text(l10n::tr("%s: %s"), l10n::tr(name.data()), m_options[m_value]);
     }
 
     void recreate_options(const std::vector<std::string>& options) {
@@ -282,7 +283,7 @@ public:
         index = std::clamp<int32_t>(index, 0, static_cast<int32_t>(m_options.size()) - 1);
 
         ImGui::PushID(this);
-        auto ret = ImGui::Combo(name.data(), &index, m_options.data(), static_cast<int32_t>(m_options.size()));
+        auto ret = ImGui::Combo(l10n::tr(name.data()), &index, m_options.data(), static_cast<int32_t>(m_options.size()));
         ImGui::PopID();
 
         m_value = m_options[index];
@@ -293,7 +294,7 @@ public:
     void draw_value(std::string_view name) override {
         index = std::clamp<int32_t>(index, 0, static_cast<int32_t>(m_options.size()) - 1);
 
-        ImGui::Text("%s: %s | %s", name.data(), m_options[index], m_value.c_str());
+        ImGui::Text(l10n::tr("%s: %s | %s"), l10n::tr(name.data()), m_options[index], m_value.c_str());
     }
 
     void recreate_options(const std::vector<std::string>& options) {
@@ -334,7 +335,7 @@ public:
         bool changed = false;
 
         ImGui::PushID(this);
-        ImGui::Button(name.data());
+        ImGui::Button(l10n::tr(name.data()));
 
         if (ImGui::IsItemHovered() && ImGui::GetIO().MouseDown[0]) {
             m_waiting_for_new_key = true;
@@ -357,16 +358,16 @@ public:
             }
 
             ImGui::SameLine();
-            ImGui::Text("Press any key...");
+            ImGui::Text(l10n::tr("Press any key..."));
         }
         else {
             ImGui::SameLine();
 
             if (m_value >= 0 && m_value <= 255) {
-                ImGui::Text("%i", m_value);
+                ImGui::Text(l10n::tr("%i"), m_value);
             }
             else {
-                ImGui::Text("Not bound");
+                ImGui::Text(l10n::tr("Not bound"));
             }
         }
 
