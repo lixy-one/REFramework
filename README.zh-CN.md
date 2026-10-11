@@ -57,13 +57,46 @@ curl "http://127.0.0.1:17890/api/fields?addr=0000025448CF2C40&type=chainsaw.Char
 | `GET /api/ping` | — | 存活检查与端口号 |
 | `GET /api/stats` | — | 类型数量等统计 |
 | `GET /api/search` | `q=<关键字>&limit=N` | 按名字搜索类型 |
-| `GET /api/type` | `name=<全名>&fields=1&methods=1` | 类型详情（字段/方法默认关闭，避免卡顿） |
+| `GET /api/type` | `name=<全名>&fields=1&methods=1` | 类型详情（字段/方法默认关闭，避免卡顿）★见下方说明 |
 | `GET /api/singleton` | `name=<类型全名>` | 取原生 / 托管单例地址 |
 | `GET /api/mem` | `addr=<hex>&size=N` | 读内存（hex + 整数 + 浮点三种视图） |
 | `GET /api/fields` | `addr=<hex>&type=<全名>&max=N` | 读对象的全部字段值 ★最实用 |
 | `GET /api/field` | `addr=<hex>&type=<全名>&name=<字段>` | 读单个字段 |
 | `GET /api/write` | `addr=<hex>&hex=<字节>` | 写内存（**需开启写开关**） |
 | `GET /api/alloc` | `size=N` | 分配内存（**需开启写开关**） |
+
+#### `/api/type` 的三个字段（含方法签名）
+
+```bash
+curl "http://127.0.0.1:17890/api/type?name=chainsaw.ShellBaseMoveInfo&methods=1&fields=1"
+```
+
+返回里与方法相关的**三个**字段，各有用处：
+
+| 字段 | 示例 | 用途 |
+|---|---|---|
+| `methods` | `"set_Direction/1"` | 旧格式（名字/参数个数），**保留兼容** |
+| **`methodSigs`** | `"set_Direction(via.vec3)"` | **参数类型** —— 可直接用于 Lua 的 `get_method()` |
+| **`methodSigsFull`** | `"System.Void set_Direction(via.vec3)"` | **返回值类型 + 参数类型** —— 阅读用 |
+
+**为什么要分两个**：Lua 的 `get_method("...")` 只按「名字 + 参数类型」匹配，
+带上返回值会导致匹配失败。所以**机器可用的形式**和**人可读的形式**分开。
+
+**解决的核心问题 —— 方法重载**：C# 允许同名不同参数，但不允许仅返回值不同。
+旧的 `methods` 格式区分不了同参数个数的重载，例如：
+
+```
+methods 里（区分不了）:
+  getPlayerContextRef/1
+  getPlayerContextRef/1
+
+methodSigs 里（能区分）:
+  getPlayerContextRef(chainsaw.CharacterManager.PlayerNo)
+  getPlayerContextRef(chainsaw.CharacterManager.PlayerKind)
+```
+
+**字段信息**（加 `&fields=1` 时返回）：名字 / 偏移 / 类型 —— 用于直接读写内存。
+
 
 ### 配置（菜单：配置 → MCP）
 
