@@ -61,9 +61,16 @@ private:
     std::vector<std::string> fonts{};
     ModComboString::Ptr m_font_file{};
 
-    // [CN patch] 界面语言切换（English / 简体中文），存到 re2_fw_config.txt
+    // [CN patch] 界面语言（选项在启动时从 reframework/langs/ 动态填充）
     ModComboString::Ptr m_language{ ModComboString::create(generate_name("Language"),
-        { "简体中文", "English" }, "简体中文") };
+        { "English" }, "English") };
+
+    // 与 m_language 的下拉选项一一对应的语言代码（"en" / "zh-CN" / ...），
+    // 用来把用户选中的显示名映射回 set_current() 需要的代码。
+    std::vector<std::string> m_language_codes{ "en" };
+
+    // 扫描 reframework/langs/ 并重建下拉选项；首次运行还会导出内置的中文表。
+    void refresh_language_list();
 
     ValueList m_options {
         *m_language,

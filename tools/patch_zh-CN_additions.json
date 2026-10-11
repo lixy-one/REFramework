@@ -1,0 +1,41 @@
+{
+  "Make sure to tick \"Enabled\" for any of the below settings to take effect.": "请勾选「启用」后再调整下面的设置，否则不会生效。",
+  "These below settings are separate and do not require \"Enabled\" to be ticked.": "下面这些设置是独立的，不需要勾选「启用」。",
+
+  "Scale Debug 2": "缩放调试 2",
+  "Offset Debug": "偏移调试",
+  "Controller rotation (Left)": "手柄旋转（左手）",
+  "Controller rotation (Right)": "手柄旋转（右手）",
+  "Controller position (Left)": "手柄位置（左手）",
+  "Controller position (Right)": "手柄位置（右手）",
+  "Controller 1": "手柄 1",
+  "Controller 2": "手柄 2",
+  "Joint": "关节",
+
+  "On a 16:10 display, keeps the game at 16:9 with black bars instead of stretching. Not applied in fullscreen.": "在 16:10 显示器上，保持游戏 16:9 比例并用黑边填充，而不是拉伸画面。全屏模式下不生效。",
+  "Interception Shader": "拦截着色器",
+  "Constant": "常量",
+
+  "Right Bounds": "右边界",
+  "Left Bounds": "左边界",
+  "Overlay Rotation": "浮层旋转",
+  "Overlay Position": "浮层位置",
+  "Raw Left": "原始左",
+  "Raw Right": "原始右",
+  "Avg Input Processing Delay (MS)": "平均输入处理延迟（毫秒）",
+
+  "Method Address": "方法地址",
+  "TDB Method Address": "TDB 方法地址",
+  "REObject Address": "RE 对象地址",
+  "Read Listeners": "读取监听器",
+  "Pinned objects": "已固定的对象",
+  "Hooked methods": "已挂钩的方法",
+
+  "Interaction profile not loaded, try putting on your headset.": "交互配置尚未加载，请戴上头显试试。",
+  "New Binding (e.g. /user/hand/left/input/trigger)": "新建绑定（例如 /user/hand/left/input/trigger）",
+  "Bindings": "绑定",
+  "Remove": "移除",
+
+  "Allow loading PAKs inside %s directory. PAKs can be of any filename and ends with .pak extension.": "允许加载 %s 目录内的 PAK 文件。PAK 可以是任意文件名，扩展名为 .pak。",
+  "Allow loading PAKs from the game directory. PAKs can be of any filename and ends with .pak extension.": "允许从游戏目录加载 PAK 文件。PAK 可以是任意文件名，扩展名为 .pak。"
+}

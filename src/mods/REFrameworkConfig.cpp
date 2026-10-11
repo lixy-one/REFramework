@@ -32,10 +32,41 @@ std::optional<std::string> REFrameworkConfig::on_initialize() {
 
     m_options.push_back(*m_font_file);
 
-    // [CN patch] 应用界面语言（默认简体中文）
-    l10n::set_enabled(m_language->value() != "English");
+    // [CN patch] i18n：扫描 reframework/langs/、首次运行导出内置中文表、
+    // 把可选语言填充进下拉框，然后应用上次选择（或默认语言）。
+    l10n::initialize();
+    l10n::export_builtin();
+    refresh_language_list();
+
+    {
+        const auto& cur = l10n::current_code();
+        for (size_t i = 0; i < m_language_codes.size(); ++i) {
+            if (m_language_codes[i] == cur) {
+                m_language->value() = m_language->options()[i];
+                break;
+            }
+        }
+    }
 
     return Mod::on_initialize();
+}
+
+void REFrameworkConfig::refresh_language_list() {
+    std::vector<std::string> names{};
+    std::vector<std::string> codes{};
+
+    for (const auto& lang : l10n::list()) {
+        names.push_back(lang.name);
+        codes.push_back(lang.code);
+    }
+
+    if (names.empty()) {
+        names.push_back("English");
+        codes.push_back("en");
+    }
+
+    m_language_codes = std::move(codes);
+    m_language->recreate_options(names);
 }
 
 void REFrameworkConfig::on_draw_ui() {
@@ -47,9 +78,16 @@ void REFrameworkConfig::on_draw_ui() {
 
     bool changed = false;
 
-    // [CN patch] 语言切换：切完立刻生效（l10n::tr 是运行时查表，下一帧 UI 即变）
+    // [CN patch] 语言切换：选中的显示名映射回语言代码，切完立刻生效
+    // （l10n::tr 是运行时查表，下一帧 UI 即变）
     if (m_language->draw("Language")) {
-        l10n::set_enabled(m_language->value() != "English");
+        const auto& names = m_language->options();
+        for (size_t i = 0; i < names.size() && i < m_language_codes.size(); ++i) {
+            if (m_language->value() == names[i]) {
+                l10n::set_current(m_language_codes[i]);
+                break;
+            }
+        }
         changed = true;
     }
 
@@ -101,8 +139,18 @@ void REFrameworkConfig::on_config_load(const utility::Config& cfg) {
     
     g_framework->set_font(m_font_file->value());
 
-    // [CN patch] 从配置恢复语言设置
-    l10n::set_enabled(m_language->value() != "English");
+    // [CN patch] 从配置恢复语言设置（l10n 已经在 on_initialize 里初始化过）
+    if (!m_language_codes.empty()) {
+        const auto& names = m_language->options();
+        for (size_t i = 0; i < names.size() && i < m_language_codes.size(); ++i) {
+            if (m_language->value() == names[i]) {
+                l10n::set_current(m_language_codes[i]);
+                break;
+            }
+        }
+    } else {
+        l10n::set_enabled(m_language->value() != "English");
+    }
 
     const auto saved_font_size = m_ui_font_size->value() > 0.0f
         ? m_ui_font_size->value()
