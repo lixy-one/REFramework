@@ -212,6 +212,77 @@ std::string api_type(const std::string& name, bool with_fields, bool with_method
             ++emitted;
         }
         out += "]";
+
+        // 新增：带完整参数类型的签名列表（便于直接用于 get_method("xxx(...)")）
+        out += ",\"methodSigs\":[";
+        first = true;
+        emitted = 0;
+        for (auto& m : t->get_methods()) {
+            if (emitted >= 512) break;
+            if (!first) out += ",";
+            first = false;
+            std::string sig = (m.get_name() != nullptr ? m.get_name() : "");
+            sig += "(";
+            std::vector<sdk::RETypeDefinition*> ptypes;
+            try {
+                ptypes = m.get_param_types();
+            } catch (...) {
+            }
+            for (size_t i = 0; i < ptypes.size(); ++i) {
+                if (i != 0) sig += ", ";
+                auto* pt = ptypes[i];
+                std::string pn;
+                if (pt != nullptr) {
+                    pn = pt->get_full_name();
+                }
+                sig += pn.empty() ? "?" : pn;
+            }
+            sig += ")";
+            out += "\"" + json_escape(sig) + "\"";
+            ++emitted;
+        }
+        out += "]";
+
+        // 新增：带【返回值类型】的完整签名（人看用；Lua 的 get_method 只认"名字+参数"）
+        out += ",\"methodSigsFull\":[";
+        first = true;
+        emitted = 0;
+        for (auto& m : t->get_methods()) {
+            if (emitted >= 512) break;
+            if (!first) out += ",";
+            first = false;
+
+            std::string ret = "Void";
+            try {
+                auto* rt = m.get_return_type();
+                if (rt != nullptr) {
+                    auto rn = rt->get_full_name();
+                    if (!rn.empty()) ret = rn;
+                }
+            } catch (...) {
+            }
+
+            std::string sig = ret + " " + (m.get_name() != nullptr ? m.get_name() : "");
+            sig += "(";
+            std::vector<sdk::RETypeDefinition*> ptypes;
+            try {
+                ptypes = m.get_param_types();
+            } catch (...) {
+            }
+            for (size_t i = 0; i < ptypes.size(); ++i) {
+                if (i != 0) sig += ", ";
+                auto* pt = ptypes[i];
+                std::string pn;
+                if (pt != nullptr) {
+                    pn = pt->get_full_name();
+                }
+                sig += pn.empty() ? "?" : pn;
+            }
+            sig += ")";
+            out += "\"" + json_escape(sig) + "\"";
+            ++emitted;
+        }
+        out += "]";
     }
 
     out += "}";
